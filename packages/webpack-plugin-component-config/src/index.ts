@@ -14,7 +14,7 @@ export interface ComponentConfigPluginOptions {
   exclude?: FilterPattern;
 }
 
-export default class WebpackComponentConfigPlugin {
+export class WebpackComponentConfigPlugin {
   private map: Map<string, Record<string, unknown>> = new Map();
   private filter: (id: string) => boolean;
 
@@ -26,7 +26,7 @@ export default class WebpackComponentConfigPlugin {
   }
 
   apply(compiler: Compiler) {
-    if (!isMiniProgram) {
+    if (!isMiniProgram()) {
       return;
     }
 
@@ -128,3 +128,5 @@ export default class WebpackComponentConfigPlugin {
     }
   }
 }
+
+export default WebpackComponentConfigPlugin;

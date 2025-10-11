@@ -21,7 +21,7 @@ export default function vitePluginComponentConfig(
     name: "vite-plugin-component-config",
     enforce: "pre",
     transform(code, id) {
-      if (!isMiniProgram) {
+      if (!isMiniProgram()) {
         return;
       }
       if (!createFilter(options.include, options.exclude)(id)) {
