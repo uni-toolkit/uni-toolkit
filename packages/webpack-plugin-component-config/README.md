@@ -52,6 +52,7 @@ export default {
 </script>
 
 <component-config>
+// 此处必须是标准的 json 对象  
 {
   "usingComponents": {
     "custom-button": "/components/custom-button"
@@ -79,4 +80,4 @@ interface ComponentConfigPluginOptions {
 
 ## 许可证
 
-MIT
+[MIT](/LICENSE)
