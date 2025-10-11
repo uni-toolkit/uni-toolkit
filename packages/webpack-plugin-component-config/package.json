@@ -11,6 +11,13 @@
       "require": "./dist/index.cjs"
     }
   },
+  "homepage": "https://github.com/uni-toolkit/uni-toolkit/tree/main/packages/webpack-plugin-component-config",
+  "bugs": "https://github.com/uni-toolkit/uni-toolkit/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/uni-toolkit/uni-toolkit.git",
+    "directory": "packages/webpack-plugin-component-config"
+  },
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",

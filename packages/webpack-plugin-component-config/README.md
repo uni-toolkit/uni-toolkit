@@ -56,8 +56,9 @@ export default {
   "usingComponents": {
     "custom-button": "/components/custom-button"
   },
-  "navigationBarTitleText": "我的页面",
-  "backgroundColor": "#ffffff"
+  "componentPlaceholder": {  
+    "test": "view",  
+  }  
 }
 </component-config>
 ```
