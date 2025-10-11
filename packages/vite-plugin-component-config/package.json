@@ -1,38 +1,38 @@
 {
-    "name": "@uni_toolkit/vite-plugin-component-config",
-    "version": "0.0.0",
-    "license": "MIT",
-    "author": "chouchouji <1305974212@qq.com>",
-    "type": "module",
-    "exports": {
-      ".": {
-        "types": "./dist/index.d.ts",
-        "import": "./dist/index.js",
-        "require": "./dist/index.cjs"
-      }
-    },
-    "publishConfig": {
-      "access": "public"
-    },
-    "main": "dist/index.cjs",
-    "module": "dist/index.js",
-    "types": "dist/index.d.ts",
-    "files": [
-      "dist"
-    ],
-    "scripts": {
-      "build": "tsup src/index.ts --format esm,cjs --out-dir=dist --dts --clean",
-      "dev": "tsup src/index.ts --format esm --out-dir=dist --watch --dts"
-    },
-    "dependencies": {
-      "@dcloudio/uni-cli-shared": "3.0.0-alpha-4080120250820001",
-      "@uni_toolkit/shared": "workspace:*",
-      "vite": "catalog:",
-      "@rollup/pluginutils": "catalog:"
-    },
-    "devDependencies": {
-      "typescript": "catalog:",
-      "tsup": "catalog:",
-      "@types/node": "catalog:"
+  "name": "@uni_toolkit/vite-plugin-component-config",
+  "version": "0.0.1",
+  "license": "MIT",
+  "author": "chouchouji <1305974212@qq.com>",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --out-dir=dist --dts --clean",
+    "dev": "tsup src/index.ts --format esm --out-dir=dist --watch --dts"
+  },
+  "dependencies": {
+    "@dcloudio/uni-cli-shared": "3.0.0-alpha-4080120250820001",
+    "@uni_toolkit/shared": "workspace:*",
+    "vite": "catalog:",
+    "@rollup/pluginutils": "catalog:"
+  },
+  "devDependencies": {
+    "typescript": "catalog:",
+    "tsup": "catalog:",
+    "@types/node": "catalog:"
   }
+}
