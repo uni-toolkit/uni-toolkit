@@ -1,4 +1,8 @@
-## 0.0.1 (2025-10-11)
+## [0.0.2](https://github.com/uni-toolkit/uni-toolkit/compare/v0.0.1...v0.0.2) (2025-10-11)
+
+
+
+## [0.0.1](https://github.com/uni-toolkit/uni-toolkit/compare/0d0e3b95b65dcc29bec63cec10c1be1d5c335fc6...v0.0.1) (2025-10-11)
 
 
 ### Bug Fixes
