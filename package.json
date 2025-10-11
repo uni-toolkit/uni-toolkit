@@ -1,0 +1,19 @@
+{
+  "name": "uni-toolkit",
+  "private": true,
+  "version": "0.0.0",
+  "description": "",
+  "scripts": {
+    "build": "pnpm --filter='./packages/*' build",
+    "release": "pnpm build && vr release"
+  },
+  "keywords": [],
+  "author": "chouchouji <1305974212@qq.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "catalog:",
+    "tsup": "catalog:",
+    "@types/node": "catalog:",
+    "@varlet/release": "latest"
+  }
+}

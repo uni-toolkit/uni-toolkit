@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+      "baseUrl": ".",
+      "target": "ESNext",
+      "module": "ESNext",
+      "moduleResolution": "node",
+      "allowSyntheticDefaultImports": true,
+      "esModuleInterop": true,
+      "allowJs": true,
+      "strict": true,
+      "noEmit": true,
+      "skipLibCheck": true,
+      "declaration": true,
+      "types": ["node"],
+      "paths": {
+        "@uni_toolkit/*": ["packages/*"]
+      }
+    },
+    "exclude": ["node_modules", "dist", "examples"]
+  }

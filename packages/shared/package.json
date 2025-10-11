@@ -1,0 +1,29 @@
+{
+  "name": "@uni_toolkit/shared",
+  "version": "0.0.0",
+  "license": "MIT",
+  "author": "chouchouji <1305974212@qq.com>",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --out-dir=dist --dts --clean",
+    "dev": "tsup src/index.ts --format esm --out-dir=dist --watch --dts"
+  },
+  "devDependencies": {
+    "typescript": "catalog:",
+    "tsup": "catalog:",
+    "@types/node": "catalog:"
+  }
+}
