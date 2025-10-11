@@ -17,6 +17,9 @@
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --out-dir=dist --dts --clean",
     "dev": "tsup src/index.ts --format esm --out-dir=dist --watch --dts"
