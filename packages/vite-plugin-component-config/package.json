@@ -35,7 +35,9 @@
     "@dcloudio/uni-cli-shared": "3.0.0-alpha-4080120250820001",
     "@uni_toolkit/shared": "workspace:*",
     "vite": "catalog:",
-    "@rollup/pluginutils": "catalog:"
+    "@rollup/pluginutils": "catalog:",
+    "lodash-es": "catalog:",
+    "@types/lodash-es": "catalog:"
   },
   "devDependencies": {
     "typescript": "catalog:",

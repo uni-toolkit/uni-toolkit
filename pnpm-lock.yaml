@@ -9,9 +9,15 @@ catalogs:
     '@rollup/pluginutils':
       specifier: ^5.3.0
       version: 5.3.0
+    '@types/lodash-es':
+      specifier: ^4.17.12
+      version: 4.17.12
     '@types/node':
       specifier: ^18.7.20
       version: 18.19.130
+    lodash-es:
+      specifier: ^4.17.21
+      version: 4.17.21
     tsup:
       specifier: 7.2.0
       version: 7.2.0
@@ -62,9 +68,15 @@ importers:
       '@rollup/pluginutils':
         specifier: 'catalog:'
         version: 5.3.0(rollup@4.52.4)
+      '@types/lodash-es':
+        specifier: 'catalog:'
+        version: 4.17.12
       '@uni_toolkit/shared':
         specifier: workspace:*
         version: link:../shared
+      lodash-es:
+        specifier: 'catalog:'
+        version: 4.17.21
       vite:
         specifier: 'catalog:'
         version: 7.1.9(@types/node@18.19.130)(terser@5.44.0)(yaml@2.8.1)
@@ -87,9 +99,15 @@ importers:
       '@rollup/pluginutils':
         specifier: 'catalog:'
         version: 5.3.0(rollup@4.52.4)
+      '@types/lodash-es':
+        specifier: 'catalog:'
+        version: 4.17.12
       '@uni_toolkit/shared':
         specifier: workspace:*
         version: link:../shared
+      lodash-es:
+        specifier: 'catalog:'
+        version: 4.17.21
       webpack:
         specifier: 'catalog:'
         version: 5.102.1(esbuild@0.18.20)
@@ -900,6 +918,12 @@ packages:
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
 
+  '@types/lodash-es@4.17.12':
+    resolution: {integrity: sha512-0NgftHUcV4v34VhXm8QBSftKVXtbkBG3ViCjs6+eJ5a6y6Mi/jiFGPc1sC7QK+9BFhWrURE3EOggmWaSxL9OzQ==}
+
+  '@types/lodash@4.17.20':
+    resolution: {integrity: sha512-H3MHACvFUEiujabxhaI/ImO6gUrd8oOurg7LQtS7mbwIXA/cUqWrvBsaeJ23aZEPk1TAYkurjfMbSELfoCXlGA==}
+
   '@types/mute-stream@0.0.4':
     resolution: {integrity: sha512-CPM9nzrCPPJHQNA9keH9CVkVI+WR5kMa+7XEs5jcGQ0VoAGnLv242w8lIVgwAEfmE4oufJRaTc9PNLQl0ioAow==}
 
@@ -1656,6 +1680,9 @@ packages:
   locate-path@7.2.0:
     resolution: {integrity: sha512-gvVijfZvn7R+2qyPX8mAuKcFGDf6Nc61GdvGafQsHL0sBIxfKzA+usWn4GFC/bk+QdwPUD4kWFJLhElipq+0VA==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+
+  lodash-es@4.17.21:
+    resolution: {integrity: sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==}
 
   lodash.camelcase@4.3.0:
     resolution: {integrity: sha512-TwuEnCnxbc3rAvhf/LbG7tJUDzhqXyFnv3dtzLOPgCG/hODL7WFnsbwktkD7yUV0RrreP/l1PALq/YSg6VvjlA==}
@@ -3059,6 +3086,12 @@ snapshots:
 
   '@types/json-schema@7.0.15': {}
 
+  '@types/lodash-es@4.17.12':
+    dependencies:
+      '@types/lodash': 4.17.20
+
+  '@types/lodash@4.17.20': {}
+
   '@types/mute-stream@0.0.4':
     dependencies:
       '@types/node': 22.18.9
@@ -3874,6 +3907,8 @@ snapshots:
   locate-path@7.2.0:
     dependencies:
       p-locate: 6.0.0
+
+  lodash-es@4.17.21: {}
 
   lodash.camelcase@4.3.0: {}
 

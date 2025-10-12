@@ -1,12 +1,10 @@
-import {
-  getOutputJsonPath,
-  isMiniProgram,
-} from "@uni_toolkit/shared";
+import { getOutputJsonPath, isMiniProgram } from "@uni_toolkit/shared";
 import { createFilter, type FilterPattern } from "@rollup/pluginutils";
 import { parseJson, parseVueRequest } from "@dcloudio/uni-cli-shared";
 import path from "path";
 import fs from "fs";
 import { Compiler, Module } from "webpack";
+import { merge } from "lodash-es";
 
 export interface ComponentConfigPluginOptions {
   include?: FilterPattern;
@@ -64,7 +62,7 @@ export class WebpackComponentConfigPlugin {
     }
 
     try {
-      const content = fs.readFileSync(filename, 'utf-8');
+      const content = fs.readFileSync(filename, "utf-8");
       const matches = content.match(
         /<component-config>([\s\S]*?)<\/component-config>/g
       );
@@ -83,11 +81,14 @@ export class WebpackComponentConfigPlugin {
             true,
             path.basename(resource)
           );
-          
+
           const outputPath = getOutputJsonPath(resource);
           this.map.set(outputPath, componentConfig);
         } catch (error) {
-          console.warn(`Failed to parse component-config in ${resource}:`, error);
+          console.warn(
+            `Failed to parse component-config in ${resource}:`,
+            error
+          );
         }
       });
     } catch (error) {
@@ -108,7 +109,7 @@ export class WebpackComponentConfigPlugin {
         const json = JSON.parse(content);
         fs.writeFileSync(
           outputPath,
-          JSON.stringify(Object.assign({}, json, config), null, 2)
+          JSON.stringify(merge(json, config), null, 2)
         );
       } catch (error) {
         console.warn(`Failed to process ${outputPath}:`, error);

@@ -4,6 +4,7 @@ import { createFilter, type FilterPattern } from "@rollup/pluginutils";
 import path from "path";
 import fs from "fs";
 import { parseJson } from "@dcloudio/uni-cli-shared";
+import { merge } from "lodash-es";
 
 export interface ComponentConfigPluginOptions {
   include?: FilterPattern;
@@ -64,7 +65,7 @@ export default function vitePluginComponentConfig(
         const json = JSON.parse(content);
         fs.writeFileSync(
           outputPath,
-          JSON.stringify(Object.assign({}, json, config), null, 2)
+          JSON.stringify(merge(json, config), null, 2)
         );
       }
     },
