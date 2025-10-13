@@ -36,14 +36,14 @@
     "@uni_toolkit/shared": "workspace:*",
     "@rollup/pluginutils": "catalog:",
     "webpack": "catalog:",
-    "lodash-es": "catalog:",
-    "@types/lodash-es": "catalog:"
+    "lodash-es": "catalog:"
   },
   "devDependencies": {
     "typescript": "catalog:",
     "tsup": "catalog:",
     "@types/node": "catalog:",
-    "@types/webpack": "^5.0.0"
+    "@types/webpack": "^5.0.0",
+    "@types/lodash-es": "catalog:"
   },
   "peerDependencies": {
     "webpack": "^5.0.0"

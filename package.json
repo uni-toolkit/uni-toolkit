@@ -11,8 +11,6 @@
   "author": "chouchouji <1305974212@qq.com>",
   "license": "MIT",
   "devDependencies": {
-    "typescript": "catalog:",
-    "tsup": "catalog:",
     "@types/node": "catalog:",
     "@varlet/release": "latest"
   }

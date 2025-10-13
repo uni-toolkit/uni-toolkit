@@ -36,12 +36,15 @@
     "@uni_toolkit/shared": "workspace:*",
     "vite": "catalog:",
     "@rollup/pluginutils": "catalog:",
-    "lodash-es": "catalog:",
-    "@types/lodash-es": "catalog:"
+    "lodash-es": "catalog:"
   },
   "devDependencies": {
     "typescript": "catalog:",
     "tsup": "catalog:",
-    "@types/node": "catalog:"
+    "@types/node": "catalog:",
+    "@types/lodash-es": "catalog:"
+  },
+  "peerDependencies": {
+    "vite": "^5.0.0"
   }
 }
