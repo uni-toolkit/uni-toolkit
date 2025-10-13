@@ -1,3 +1,12 @@
+## [0.0.4](https://github.com/uni-toolkit/uni-toolkit/compare/v0.0.3...v0.0.4) (2025-10-13)
+
+
+### Features
+
+* add unplugin-compress-json package ([5145e83](https://github.com/uni-toolkit/uni-toolkit/commit/5145e8354aa7afa4920b128d04f15e0d2ffec74b))
+
+
+
 ## [0.0.3](https://github.com/uni-toolkit/uni-toolkit/compare/v0.0.2...v0.0.3) (2025-10-13)
 
 
