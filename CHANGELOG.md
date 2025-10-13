@@ -1,3 +1,12 @@
+## [0.0.3](https://github.com/uni-toolkit/uni-toolkit/compare/v0.0.2...v0.0.3) (2025-10-13)
+
+
+### Bug Fixes
+
+* use merge function of lodash to replace Object.assign ([320fbf2](https://github.com/uni-toolkit/uni-toolkit/commit/320fbf28406b47b8280628f17229bea0d760dbb2))
+
+
+
 ## [0.0.2](https://github.com/uni-toolkit/uni-toolkit/compare/v0.0.1...v0.0.2) (2025-10-11)
 
 
