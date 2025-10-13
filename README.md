@@ -16,6 +16,12 @@ UniApp 项目设计的插件集合，提供各种实用的构建工具和开发�
 
 - [@uni_toolkit/webpack-plugin-component-config](./packages/webpack-plugin-component-config/README.md)
 
+### @uni_toolkit/unplugin-compress-json
+
+一个用于压缩 JSON 文件的 `unplugin 插件`，支持 Vite 和 Webpack。自动压缩 `JSON 文件` ，减小文件体积。
+
+- [@uni_toolkit/unplugin-compress-json](./packages/unplugin-compress-json/README.md)
+
 ## 📄 许可证
 
 [MIT](LICENSE)
