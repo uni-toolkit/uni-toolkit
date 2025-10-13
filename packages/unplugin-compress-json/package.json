@@ -1,0 +1,91 @@
+{
+  "name": "@uni_toolkit/unplugin-compress-json",
+  "type": "module",
+  "version": "0.0.3",
+  "description": "A plugin to compress json files",
+  "license": "MIT",
+  "homepage": "https://github.com/uni-toolkit/uni-toolkit/tree/main/packages/unplugin-compress-json",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uni-toolkit/uni-toolkit.git",
+    "directory": "packages/unplugin-compress-json"
+  },
+  "bugs": {
+    "url": "https://github.com/uni-toolkit/uni-toolkit/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "unplugin",
+    "vite",
+    "webpack",
+    "transform",
+    "json",
+    "compress"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./types": {
+      "import": "./dist/types.js",
+      "require": "./dist/types.cjs"
+    },
+    "./vite": {
+      "import": "./dist/vite.js",
+      "require": "./dist/vite.cjs"
+    },
+    "./webpack": {
+      "import": "./dist/webpack.js",
+      "require": "./dist/webpack.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/*",
+        "./*"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "peerDependencies": {
+    "vite": ">=3",
+    "webpack": "^4 || ^5"
+  },
+  "peerDependenciesMeta": {
+    "vite": {
+      "optional": true
+    },
+    "webpack": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "unplugin": "^2.3.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.21",
+    "nodemon": "^3.1.10",
+    "rollup": "^4.41.0",
+    "tsdown": "^0.12.0",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5",
+    "webpack": "^5.99.9"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "start": "tsx src/index.ts"
+  }
+}
