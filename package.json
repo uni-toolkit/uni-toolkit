@@ -2,16 +2,13 @@
   "name": "uni-toolkit",
   "private": true,
   "version": "0.0.4",
-  "description": "",
   "scripts": {
     "build": "pnpm --filter='./packages/*' build",
     "release": "pnpm build && vr release"
   },
-  "keywords": [],
   "author": "chouchouji <1305974212@qq.com>",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "catalog:",
     "@varlet/release": "latest"
   }
 }

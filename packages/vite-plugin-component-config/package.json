@@ -11,6 +11,15 @@
       "require": "./dist/index.cjs"
     }
   },
+  "keywords": [
+    "uni-app",
+    "vue3",
+    "miniprogram",
+    "vite",
+    "plugin",
+    "component",
+    "custom"
+  ],
   "publishConfig": {
     "access": "public"
   },

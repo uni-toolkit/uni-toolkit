@@ -35,9 +35,6 @@ importers:
 
   .:
     devDependencies:
-      '@types/node':
-        specifier: 'catalog:'
-        version: 18.19.130
       '@varlet/release':
         specifier: latest
         version: 0.4.1

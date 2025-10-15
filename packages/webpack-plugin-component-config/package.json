@@ -11,6 +11,15 @@
       "require": "./dist/index.cjs"
     }
   },
+  "keywords": [
+    "uni-app",
+    "vue2",
+    "miniprogram",
+    "webpack",
+    "plugin",
+    "component",
+    "custom"
+  ],
   "homepage": "https://github.com/uni-toolkit/uni-toolkit/tree/main/packages/webpack-plugin-component-config",
   "bugs": "https://github.com/uni-toolkit/uni-toolkit/issues",
   "repository": {

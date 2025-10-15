@@ -39,6 +39,7 @@ module.exports = {
 ### 修改 Vue 文件
 
 ```vue
+// custom-component.vue
 <template>
   <view class="container">
     <text>Hello World</text>
@@ -62,11 +63,29 @@ export default {
   "usingComponents": {
     "custom-button": "/components/custom-button"
   },
+  "styleIsolation": "apply-shared",
   "componentPlaceholder": {  
     "test": "view",  
   }  
 }
 </component-config>
+```
+
+编译到小程序端生成的 `JSON 文件` 如下所示
+
+```json
+// custom-component.json
+{
+  "component": true,
+  "usingComponents": {
+    "test": "../sub1/test",
+    "custom-button": "/components/custom-button"
+  },
+  "styleIsolation": "apply-shared",
+  "componentPlaceholder": {
+    "test": "view"
+  }
+}
 ```
 
 ## 配置选项
