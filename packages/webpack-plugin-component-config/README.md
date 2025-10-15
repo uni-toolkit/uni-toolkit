@@ -42,12 +42,17 @@ module.exports = {
 <template>
   <view class="container">
     <text>Hello World</text>
+    <test></test>
   </view>
 </template>
 
 <script>
+import test from '../sub1/test' // 引入子包中的vue组件
 export default {
-  name: 'MyComponent'
+  name: 'MyComponent',
+  components: {
+    test
+  }
 }
 </script>
 
