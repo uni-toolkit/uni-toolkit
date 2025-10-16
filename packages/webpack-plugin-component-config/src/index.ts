@@ -1,10 +1,10 @@
-import { getOutputJsonPath, isMiniProgram } from "@uni_toolkit/shared";
-import { createFilter, type FilterPattern } from "@rollup/pluginutils";
-import { parseJson, parseVueRequest } from "@dcloudio/uni-cli-shared";
-import path from "path";
-import fs from "fs";
-import { Compiler, Module } from "webpack";
-import { merge } from "lodash-es";
+import { getOutputJsonPath, isMiniProgram } from '@uni_toolkit/shared';
+import { createFilter, type FilterPattern } from '@rollup/pluginutils';
+import { parseJson, parseVueRequest } from '@dcloudio/uni-cli-shared';
+import path from 'node:path';
+import fs from 'node:fs';
+import type { Compiler, Module } from 'webpack';
+import { merge } from 'lodash-es';
 
 export interface ComponentConfigPluginOptions {
   include?: FilterPattern;
@@ -17,10 +17,7 @@ export class WebpackComponentConfigPlugin {
   private set: Set<string> = new Set();
 
   constructor(options: ComponentConfigPluginOptions = {}) {
-    this.filter = createFilter(
-      options.include || ["**/*.{vue,nvue,uvue}"],
-      options.exclude
-    );
+    this.filter = createFilter(options.include || ['**/*.{vue,nvue,uvue}'], options.exclude);
   }
 
   apply(compiler: Compiler) {
@@ -28,21 +25,15 @@ export class WebpackComponentConfigPlugin {
       return;
     }
 
-    compiler.hooks.compilation.tap(
-      "WebpackComponentConfigPlugin",
-      (compilation) => {
-        // 在模块构建完成后处理
-        compilation.hooks.succeedModule.tap(
-          "WebpackComponentConfigPlugin",
-          (module) => {
-            this.processModule(module);
-          }
-        );
-      }
-    );
+    compiler.hooks.compilation.tap('WebpackComponentConfigPlugin', (compilation) => {
+      // 在模块构建完成后处理
+      compilation.hooks.succeedModule.tap('WebpackComponentConfigPlugin', (module) => {
+        this.processModule(module);
+      });
+    });
 
     // 在输出完成后处理 JSON 文件
-    compiler.hooks.afterEmit.tap("WebpackComponentConfigPlugin", () => {
+    compiler.hooks.afterEmit.tap('WebpackComponentConfigPlugin', () => {
       this.closeBundle();
     });
   }
@@ -62,33 +53,21 @@ export class WebpackComponentConfigPlugin {
     }
 
     try {
-      const content = fs.readFileSync(filename, "utf-8");
-      const matches = content.match(
-        /<component-config>([\s\S]*?)<\/component-config>/g
-      );
+      const content = fs.readFileSync(filename, 'utf-8');
+      const matches = content.match(/<component-config>([\s\S]*?)<\/component-config>/g);
       if (!matches) {
         return;
       }
 
       matches.forEach((match) => {
-        const configContent = match.replace(
-          /<component-config>|<\/component-config>/g,
-          ""
-        );
+        const configContent = match.replace(/<component-config>|<\/component-config>/g, '');
         try {
-          const componentConfig = parseJson(
-            configContent.toString(),
-            true,
-            path.basename(resource)
-          );
+          const componentConfig = parseJson(configContent.toString(), true, path.basename(resource));
 
           const outputPath = getOutputJsonPath(resource);
           this.map.set(outputPath, componentConfig);
         } catch (error) {
-          console.warn(
-            `Failed to parse component-config in ${resource}:`,
-            error
-          );
+          console.warn(`Failed to parse component-config in ${resource}:`, error);
         }
       });
     } catch (error) {
@@ -105,12 +84,9 @@ export class WebpackComponentConfigPlugin {
         continue;
       }
       try {
-        const content = fs.readFileSync(outputPath, "utf-8");
+        const content = fs.readFileSync(outputPath, 'utf-8');
         const json = JSON.parse(content);
-        fs.writeFileSync(
-          outputPath,
-          JSON.stringify(merge(json, config), null, 2)
-        );
+        fs.writeFileSync(outputPath, JSON.stringify(merge(json, config), null, 2));
       } catch (error) {
         console.warn(`Failed to process ${outputPath}:`, error);
       }

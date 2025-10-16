@@ -3,12 +3,15 @@
   "private": true,
   "version": "0.0.5",
   "scripts": {
+    "format": "biome format --write",
+    "lint": "biome lint --write",
     "build": "pnpm --filter='./packages/*' build",
     "release": "pnpm build && vr release"
   },
   "author": "chouchouji <1305974212@qq.com>",
   "license": "MIT",
   "devDependencies": {
+    "@biomejs/biome": "2.2.6",
     "@varlet/release": "latest"
   }
 }
