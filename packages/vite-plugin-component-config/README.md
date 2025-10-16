@@ -59,8 +59,9 @@ export default {
 }
 </script>
 
+// #ifdef MP
 <component-config>
-// 此处必须是标准的 json 对象  
+// 此处必须是标准的 json 对象，支持条件编译
 {
   "usingComponents": {
     "custom-button": "/components/custom-button"
@@ -71,6 +72,7 @@ export default {
   }  
 }
 </component-config>
+// #endif
 ```
 
 编译到小程序端生成的 `JSON 文件` 如下所示
