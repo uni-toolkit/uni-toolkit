@@ -6,13 +6,24 @@
     "format": "biome format --write",
     "lint": "biome lint --write",
     "build": "pnpm --filter='./packages/*' build",
-    "release": "pnpm build && vr release"
+    "release": "pnpm build && vr release",
+    "postinstall": "simple-git-hooks"
   },
   "author": "chouchouji <1305974212@qq.com>",
   "license": "MIT",
   "devDependencies": {
     "@biomejs/biome": "2.2.6",
     "@types/node": "catalog:",
-    "@varlet/release": "latest"
+    "@varlet/release": "latest",
+    "lint-staged": "^16.2.6",
+    "simple-git-hooks": "^2.13.1"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm exec lint-staged --concurrent false"
+  },
+  "lint-staged": {
+    "packages/*/src/**/*.ts": [
+      "biome format --write"
+    ]
   }
 }
