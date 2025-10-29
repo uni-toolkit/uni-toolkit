@@ -23,6 +23,7 @@
   },
   "lint-staged": {
     "packages/*/src/**/*.ts": [
+      "biome lint --write",
       "biome format --write"
     ]
   }
