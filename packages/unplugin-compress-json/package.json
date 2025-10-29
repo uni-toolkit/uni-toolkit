@@ -77,15 +77,15 @@
     "@types/node": "^22.15.21",
     "nodemon": "^3.1.10",
     "rollup": "^4.41.0",
-    "tsdown": "^0.12.0",
+    "tsup": "catalog:",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3",
     "vite": "^6.3.5",
     "webpack": "^5.99.9"
   },
   "scripts": {
-    "build": "tsdown",
-    "dev": "tsdown --watch",
+    "build": "tsup",
+    "dev": "tsup --watch",
     "start": "tsx src/index.ts"
   }
 }
