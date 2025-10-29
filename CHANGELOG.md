@@ -1,3 +1,12 @@
+## [0.0.7](https://github.com/uni-toolkit/uni-toolkit/compare/v0.0.6...v0.0.7) (2025-10-29)
+
+
+### Bug Fixes
+
+* **webpack-plugin-component-config:** don't external lodash-es ([#2](https://github.com/uni-toolkit/uni-toolkit/issues/2)) ([958ec1d](https://github.com/uni-toolkit/uni-toolkit/commit/958ec1d486fa25a7b4048f0ca5d5bb1bb0099bf9))
+
+
+
 ## [0.0.6](https://github.com/uni-toolkit/uni-toolkit/compare/v0.0.5...v0.0.6) (2025-10-16)
 
 
