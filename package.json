@@ -12,6 +12,7 @@
   "license": "MIT",
   "devDependencies": {
     "@biomejs/biome": "2.2.6",
+    "@types/node": "catalog:",
     "@varlet/release": "latest"
   }
 }

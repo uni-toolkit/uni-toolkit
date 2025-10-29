@@ -38,6 +38,9 @@ importers:
       '@biomejs/biome':
         specifier: 2.2.6
         version: 2.2.6
+      '@types/node':
+        specifier: 'catalog:'
+        version: 18.19.130
       '@varlet/release':
         specifier: latest
         version: 0.4.1
