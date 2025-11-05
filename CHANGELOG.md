@@ -1,3 +1,12 @@
+## [0.0.8](https://github.com/uni-toolkit/uni-toolkit/compare/v0.0.7...v0.0.8) (2025-11-05)
+
+
+### Features
+
+* add unplugin-json-optimization plugin ([5b6012c](https://github.com/uni-toolkit/uni-toolkit/commit/5b6012c61445c555b88f72333d3eecfc68aacbe0))
+
+
+
 ## [0.0.7](https://github.com/uni-toolkit/uni-toolkit/compare/v0.0.6...v0.0.7) (2025-10-29)
 
 

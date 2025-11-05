@@ -1,7 +1,7 @@
 {
   "name": "uni-toolkit",
   "private": true,
-  "version": "0.0.7",
+  "version": "0.0.8",
   "scripts": {
     "format": "biome format --write",
     "lint": "biome lint --write",
