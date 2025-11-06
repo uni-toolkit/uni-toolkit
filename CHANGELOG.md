@@ -1,3 +1,12 @@
+## [0.0.11](https://github.com/uni-toolkit/uni-toolkit/compare/v0.0.10...v0.0.11) (2025-11-06)
+
+
+### Bug Fixes
+
+* **unplugin-json-optimization:** correct json file reference paths ([5a110b7](https://github.com/uni-toolkit/uni-toolkit/commit/5a110b73a36c28e34c1d7f78bbc9d171a82b636b))
+
+
+
 ## [0.0.10](https://github.com/uni-toolkit/uni-toolkit/compare/v0.0.9...v0.0.10) (2025-11-06)
 
 
