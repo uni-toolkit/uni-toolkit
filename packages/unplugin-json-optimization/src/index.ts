@@ -8,7 +8,7 @@ import path from 'node:path';
 export const unpluginFactory: UnpluginFactory<Options | undefined> = (
   options = {
     includes: ['**/*.json'],
-    excludes: ['pages.json', '**/uni_modules/*.json'],
+    excludes: ['pages.json', '**/uni_modules/**/*.json'],
   },
 ) => {
   const jsonFiles = new Set<string>();
@@ -25,13 +25,13 @@ export const unpluginFactory: UnpluginFactory<Options | undefined> = (
       }
     },
     generateBundle(_: unknown, bundle: Record<string, OutputChunk | OutputAsset>) {
-      for (const [, chunk] of Object.entries(bundle)) {
-        if (chunk.type !== 'chunk' || !chunk.moduleIds) {
+      for (const [fileName, chunk] of Object.entries(bundle)) {
+        // 仅处理根目录下编译过的 JSON 文件，避免 json 文件和页面 js 文件合并
+        if (chunk.type !== 'chunk' || !chunk.moduleIds || !chunk.moduleIds.length || fileName.includes('/')) {
           continue;
         }
         const id = chunk.moduleIds.find((id) => jsonFiles.has(id));
-        // 仅处理根目录下处理过的 JSON 文件，避免 json 文件和页面 js 文件合并
-        if (id && !id.includes('/')) {
+        if (id) {
           const relativePath = path.relative(inputDir!, id);
           const { dir, name } = path.parse(relativePath);
           chunk.fileName = `${path.join(dir, name)}.js`;
