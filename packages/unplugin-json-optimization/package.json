@@ -71,7 +71,7 @@
     }
   },
   "dependencies": {
-    "@rollup/pluginutils": "^4.2.0",
+    "@rollup/pluginutils": "catalog:",
     "unplugin": "^2.3.4"
   },
   "devDependencies": {

@@ -14,7 +14,7 @@
   "devDependencies": {
     "@biomejs/biome": "2.2.6",
     "@types/node": "catalog:",
-    "@varlet/release": "latest",
+    "@varlet/release": "^0.4.2",
     "lint-staged": "^16.2.6",
     "simple-git-hooks": "^2.13.1"
   },
