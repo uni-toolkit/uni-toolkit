@@ -6,12 +6,12 @@ import { createFilter } from '@rollup/pluginutils';
 import path from 'node:path';
 
 function replaceRequirePaths(code: string, pathMapper: (path: string) => string) {
-  return code.replace(/require\s*\(\s*(["'])([^"']+)\1\s*\)/g, (_, quote, path) => {
+  return code.replace(/require\s*\(\s*(["'])([^"']+)\1\s*\)/g, (match, quote, path) => {
     const newPath = pathMapper(path);
     if (newPath && newPath !== path) {
       return `require(${quote}${newPath}${quote})`;
     }
-    return code;
+    return match;
   });
 }
 
