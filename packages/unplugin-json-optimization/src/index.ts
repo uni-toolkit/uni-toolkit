@@ -5,6 +5,16 @@ import type { OutputAsset, OutputChunk } from 'rollup';
 import { createFilter } from '@rollup/pluginutils';
 import path from 'node:path';
 
+function replaceRequirePaths(code: string, pathMapper: (path: string) => string) {
+  return code.replace(/require\s*\(\s*(["'])([^"']+)\1\s*\)/g, (_, quote, path) => {
+    const newPath = pathMapper(path);
+    if (newPath && newPath !== path) {
+      return `require(${quote}${newPath}${quote})`;
+    }
+    return code;
+  });
+}
+
 export const unpluginFactory: UnpluginFactory<Options | undefined> = (
   options = {
     includes: ['**/*.json'],
@@ -12,6 +22,7 @@ export const unpluginFactory: UnpluginFactory<Options | undefined> = (
   },
 ) => {
   const jsonFiles = new Set<string>();
+  const pathMap = new Map<string, string>();
   const inputDir = process.env.UNI_INPUT_DIR;
   return {
     name: 'unplugin-json-optimization',
@@ -35,6 +46,24 @@ export const unpluginFactory: UnpluginFactory<Options | undefined> = (
           const relativePath = path.relative(inputDir!, id);
           const { dir, name } = path.parse(relativePath);
           chunk.fileName = `${path.join(dir, name)}.js`;
+          pathMap.set(fileName, chunk.fileName);
+        }
+      }
+
+      const keys = Array.from(pathMap.keys());
+      for (const [fileName, chunk] of Object.entries(bundle)) {
+        if (chunk.type !== 'chunk') {
+          continue;
+        }
+
+        if (keys.some((key) => chunk.code.includes(key))) {
+          chunk.code = replaceRequirePaths(chunk.code, (originalPath: string) => {
+            const name = path.relative(process.cwd(), path.resolve(path.dirname(fileName), originalPath));
+            if (keys.includes(name)) {
+              return path.relative(path.dirname(fileName), pathMap.get(name)!);
+            }
+            return originalPath;
+          });
         }
       }
     },
