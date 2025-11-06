@@ -1,3 +1,12 @@
+## [0.0.12](https://github.com/uni-toolkit/uni-toolkit/compare/v0.0.11...v0.0.12) (2025-11-06)
+
+
+### Bug Fixes
+
+* **unplugin-json-optimization:** correct chunk ([cd44d05](https://github.com/uni-toolkit/uni-toolkit/commit/cd44d05745462a864e52353eda7fd476e2213c08))
+
+
+
 ## [0.0.11](https://github.com/uni-toolkit/uni-toolkit/compare/v0.0.10...v0.0.11) (2025-11-06)
 
 

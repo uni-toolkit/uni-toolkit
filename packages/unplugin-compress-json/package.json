@@ -1,7 +1,7 @@
 {
   "name": "@uni_toolkit/unplugin-compress-json",
   "type": "module",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "A plugin to compress json files",
   "license": "MIT",
   "homepage": "https://github.com/uni-toolkit/uni-toolkit/tree/main/packages/unplugin-compress-json",
