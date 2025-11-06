@@ -1,7 +1,7 @@
 {
   "name": "@uni_toolkit/unplugin-json-optimization",
   "type": "module",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "A plugin to optimize json files generation",
   "license": "MIT",
   "homepage": "https://github.com/uni-toolkit/uni-toolkit/tree/main/packages/unplugin-json-optimization",

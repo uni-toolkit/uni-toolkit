@@ -1,3 +1,12 @@
+## [0.0.10](https://github.com/uni-toolkit/uni-toolkit/compare/v0.0.9...v0.0.10) (2025-11-06)
+
+
+### Bug Fixes
+
+* **unplugin-json-optimization:** don't update chunk filename when output chunk path has / ([269ef69](https://github.com/uni-toolkit/uni-toolkit/commit/269ef698259bfbe7d5ead3a3cb8d957be914a9de))
+
+
+
 ## [0.0.9](https://github.com/uni-toolkit/uni-toolkit/compare/v0.0.8...v0.0.9) (2025-11-05)
 
 
