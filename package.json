@@ -5,7 +5,7 @@
   "scripts": {
     "format": "biome format --write",
     "lint": "biome lint --write",
-    "build": "pnpm --filter='./packages/*' build",
+    "build": "jiti scripts/build.ts",
     "release": "pnpm build && vr release",
     "postinstall": "simple-git-hooks"
   },
@@ -15,6 +15,7 @@
     "@biomejs/biome": "2.2.6",
     "@types/node": "catalog:",
     "@varlet/release": "^0.4.2",
+    "jiti": "^2.6.1",
     "lint-staged": "^16.2.6",
     "simple-git-hooks": "^2.13.1"
   },
