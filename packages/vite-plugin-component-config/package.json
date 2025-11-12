@@ -37,8 +37,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --out-dir=dist --dts --clean",
-    "dev": "tsup src/index.ts --format esm --out-dir=dist --watch --dts"
+    "build": "tsup",
+    "dev": "tsup --watch"
   },
   "dependencies": {
     "@dcloudio/uni-cli-shared": "3.0.0-alpha-4080120250820001",
