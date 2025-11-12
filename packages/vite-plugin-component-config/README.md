@@ -2,6 +2,9 @@
 
 一个用于 UniApp 项目的 Vite 插件，用于处理 Vue 文件中的 `<component-config>` 标签，将配置提取并合并到对应的 `小程序 JSON 文件` 中。
 
+> [!TIP]
+> **Node.js** >= 18.0.0
+
 ## 功能特性
 
 - 🎯 **配置提取**：从 Vue 文件的 `<component-config>` 标签中提取 JSON 配置
