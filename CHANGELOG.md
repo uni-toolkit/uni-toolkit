@@ -1,3 +1,12 @@
+## [0.0.14](https://github.com/uni-toolkit/uni-toolkit/compare/v0.0.13...v0.0.14) (2025-11-12)
+
+
+### Bug Fixes
+
+* **vite-plugin-component-config:** don't external lodash-es for nodejs compatibility ([42f5cd5](https://github.com/uni-toolkit/uni-toolkit/commit/42f5cd5e9bec5ec9ab969f5a547a1708caeb6647))
+
+
+
 ## [0.0.13](https://github.com/uni-toolkit/uni-toolkit/compare/v0.0.12...v0.0.13) (2025-11-12)
 
 
