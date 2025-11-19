@@ -24,7 +24,7 @@ uni-app 项目设计的插件集合，提供各种实用的构建工具和开发
 
 ### @uni_toolkit/unplugin-json-optimization
 
-一个用于分包优化 JSON 文件生成的 unplugin 插件，支持 Vite 和 Webpack。自动优化分包 `JSON 文件` 生成，减小主包体积。
+一个用于分包优化 JSON 文件生成的 unplugin 插件，支持 Vite。自动优化分包 `JSON 文件` 生成，减小主包体积。
 
 - [@uni_toolkit/unplugin-json-optimization](./packages/unplugin-json-optimization/README.md)
 

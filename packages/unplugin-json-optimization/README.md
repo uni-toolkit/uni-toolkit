@@ -1,11 +1,10 @@
 # @uni_toolkit/unplugin-json-optimization
 
-一个用于分包优化 JSON 文件生成的 unplugin 插件，支持 Vite 和 Webpack。
+一个用于分包优化 JSON 文件生成的 unplugin 插件，支持 Vite。
 
 ## 功能特性
 
 - 🗜️ **自动优化产物** - 自动优化分包 JSON 文件的生成
-- 🔧 **多构建工具支持** - 支持 Vite、Webpack 等构建工具
 - ⚡ **零配置** - 开箱即用
 - 🎯 **精确匹配** - 只处理 `.json` 文件，不影响其他资源
 
