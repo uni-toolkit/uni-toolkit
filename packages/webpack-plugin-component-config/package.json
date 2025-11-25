@@ -41,7 +41,7 @@
     "dev": "tsup --watch"
   },
   "dependencies": {
-    "@dcloudio/uni-cli-shared": "3.0.0-alpha-4080120250820001",
+    "@dcloudio/uni-cli-shared": "2.0.2-alpha-4080720251125002",
     "@uni_toolkit/shared": "workspace:*",
     "@rollup/pluginutils": "catalog:",
     "webpack": "catalog:",

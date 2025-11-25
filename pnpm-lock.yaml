@@ -165,8 +165,8 @@ importers:
   packages/webpack-plugin-component-config:
     dependencies:
       '@dcloudio/uni-cli-shared':
-        specifier: 3.0.0-alpha-4080120250820001
-        version: 3.0.0-alpha-4080120250820001(postcss@8.5.6)(rollup@4.52.4)(vue@3.4.21(typescript@5.3.3))
+        specifier: 2.0.2-alpha-4080720251125002
+        version: 2.0.2-alpha-4080720251125002
       '@rollup/pluginutils':
         specifier: 'catalog:'
         version: 5.3.0(rollup@4.52.4)
@@ -338,6 +338,9 @@ packages:
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [win32]
+
+  '@dcloudio/uni-cli-shared@2.0.2-alpha-4080720251125002':
+    resolution: {integrity: sha512-o+aJPhqaxLrxsqhyjCV4hXvgfdvsAKc8ydAnhTDuMRBjBy8cj9h2ETJQ/57WGVJVjAQR2TYeA1ZE3kKb/8vOiA==}
 
   '@dcloudio/uni-cli-shared@3.0.0-alpha-4080120250820001':
     resolution: {integrity: sha512-yCqYMdP7ijHNVobuofpr/YU6UXyschPwztF4H8akUdt62wEa4TUxJEuSffnBLlZ25WWbkvOWwl7ULvUrYp3QPQ==}
@@ -1520,6 +1523,10 @@ packages:
     resolution: {integrity: sha512-vbRorB5FUQWvla16U8R/qgaFIya2qGzwDrNmCZuYKrbdSUMG6I1ZCGQRefkRVhuOkIGVne7BQ35DSfo1qvJqFg==}
     engines: {node: '>=0.8.0'}
 
+  escape-string-regexp@4.0.0:
+    resolution: {integrity: sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==}
+    engines: {node: '>=10'}
+
   escape-string-regexp@5.0.0:
     resolution: {integrity: sha512-/veY75JbMK4j1yjvuUxuVsiS/hr/4iHs9FTT6cgTexxdE0Ly/glccBAkloH/DofkjRbZU3bnoj38mOmhkZ0lHw==}
     engines: {node: '>=12'}
@@ -1645,6 +1652,10 @@ packages:
     engines: {node: '>=16'}
     hasBin: true
 
+  glob-escape@0.0.2:
+    resolution: {integrity: sha512-L/cXYz8x7qer1HAyUQ+mbjcUsJVdpRxpAf7CwqHoNBs9vTpABlGfNN4tzkDxt+u3Z7ZncVyKlCNPtzb0R/7WbA==}
+    engines: {node: '>= 0.10'}
+
   glob-parent@5.1.2:
     resolution: {integrity: sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow==}
     engines: {node: '>= 6'}
@@ -1675,6 +1686,9 @@ packages:
   has-flag@4.0.0:
     resolution: {integrity: sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==}
     engines: {node: '>=8'}
+
+  hash-sum@1.0.2:
+    resolution: {integrity: sha512-fUs4B4L+mlt8/XAtSOGMUO1TXmAelItBPtJG7CyHJfYTdDjwisntGO2JQz7oUsatOY9o68+57eziUVNw/mRHmA==}
 
   hash-sum@2.0.0:
     resolution: {integrity: sha512-WdZTbAByD+pHfl/g9QSsBIIwy8IT+EsPiKDs0KNX+zSHhdDLFKdZu0BQHljvO+0QI/BasbMSUa8wYNCZTvhslg==}
@@ -2090,6 +2104,10 @@ packages:
   pkg-types@2.3.0:
     resolution: {integrity: sha512-SIqCzDRg0s9npO5XQ3tNZioRY1uK06lA41ynBC1YmFTmnY6FjUjVt6s4LoADmwoig1qqD0oK8h1p/8mlMx8Oig==}
 
+  postcss-helpers@0.3.3:
+    resolution: {integrity: sha512-VumiUcrpbxGlTBNQj6fUOkb/HNRUk/xYz8bNlhgVOdvk3yWEy4B+0nlDUZZM9mTVZ5bJoxUy7WT6z/4E7oMTgw==}
+    engines: {node: '>=0.12.9'}
+
   postcss-import@14.1.0:
     resolution: {integrity: sha512-flwI+Vgm4SElObFVPpTIT7SU7R3qk2L7PyduMcokiaVKuWv9d/U+Gm/QAd8NDLuykTWTkcrjOeD2Pp1rMeBTGw==}
     engines: {node: '>=10.0.0'}
@@ -2156,6 +2174,10 @@ packages:
   postcss-selector-parser@7.1.0:
     resolution: {integrity: sha512-8sLjZwK0R+JlxlYcTuVnyT2v+htpdrjDOKuMcOVdYjt52Lh8hWRYpxBPoKx/Zg+bcjc3wx6fmQevMmUztS/ccA==}
     engines: {node: '>=4'}
+
+  postcss-urlrewrite@0.2.2:
+    resolution: {integrity: sha512-DxPSgykgHjoV4Z+ygvq2C5HkiuiKQQD74xpoNQSQuyi8zab9nODVtNKfnCN6BEv9VZrjpOGLGAf8BDvgG6EtHg==}
+    engines: {node: '>=0.12.9'}
 
   postcss-value-parser@4.2.0:
     resolution: {integrity: sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==}
@@ -2360,6 +2382,10 @@ packages:
     resolution: {integrity: sha512-BrpvfNAE3dcvq7ll3xVumzjKjZQ5tI1sEUIKr3Uoks0XUl45St3FlatVqef9prk4jRDzhW6WZg+3bk93y6pLjA==}
     engines: {node: '>=6'}
 
+  strip-json-comments@2.0.1:
+    resolution: {integrity: sha512-4gB8na07fecVVkOI6Rs4e7T6NOTki5EmL7TUduTs6bu3EdnSycntVJ4re8kgZA+wx9IueI2Y11bfbgwtzuE0KQ==}
+    engines: {node: '>=0.10.0'}
+
   strip-literal@3.1.0:
     resolution: {integrity: sha512-8r3mkIM/2+PpjHoOtiAW8Rg3jJLHaV7xPwG+YRGrv6FP0wwk/toTpATxWYOW0BKdWwl82VT2tFYi5DlROa0Mxg==}
 
@@ -2545,6 +2571,9 @@ packages:
     hasBin: true
     peerDependencies:
       browserslist: '>= 4.21.0'
+
+  urijs@1.19.11:
+    resolution: {integrity: sha512-HXgFDgDommxn5/bIv0cnQZsPhHDA90NPHD6+c/v21U5+Sx5hoP8+dP9IZXBU1gIfvdRfhG8cel9QNPeionfcCQ==}
 
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
@@ -2865,6 +2894,16 @@ snapshots:
 
   '@biomejs/cli-win32-x64@2.2.6':
     optional: true
+
+  '@dcloudio/uni-cli-shared@2.0.2-alpha-4080720251125002':
+    dependencies:
+      escape-string-regexp: 4.0.0
+      fast-glob: 3.3.3
+      fs-extra: 10.1.0
+      glob-escape: 0.0.2
+      hash-sum: 1.0.2
+      postcss-urlrewrite: 0.2.2
+      strip-json-comments: 2.0.1
 
   '@dcloudio/uni-cli-shared@3.0.0-alpha-4080120250820001(postcss@8.5.6)(rollup@4.52.4)(vue@3.4.21(typescript@5.3.3))':
     dependencies:
@@ -3994,6 +4033,8 @@ snapshots:
 
   escape-string-regexp@1.0.5: {}
 
+  escape-string-regexp@4.0.0: {}
+
   escape-string-regexp@5.0.0: {}
 
   eslint-scope@5.1.1:
@@ -4117,6 +4158,8 @@ snapshots:
       meow: 12.1.1
       semver: 7.7.3
 
+  glob-escape@0.0.2: {}
+
   glob-parent@5.1.2:
     dependencies:
       is-glob: 4.0.3
@@ -4155,6 +4198,8 @@ snapshots:
   has-flag@3.0.0: {}
 
   has-flag@4.0.0: {}
+
+  hash-sum@1.0.2: {}
 
   hash-sum@2.0.0: {}
 
@@ -4507,6 +4552,10 @@ snapshots:
       exsolve: 1.0.7
       pathe: 2.0.3
 
+  postcss-helpers@0.3.3:
+    dependencies:
+      urijs: 1.19.11
+
   postcss-import@14.1.0(postcss@8.5.6):
     dependencies:
       postcss: 8.5.6
@@ -4570,6 +4619,10 @@ snapshots:
     dependencies:
       cssesc: 3.0.0
       util-deprecate: 1.0.2
+
+  postcss-urlrewrite@0.2.2:
+    dependencies:
+      postcss-helpers: 0.3.3
 
   postcss-value-parser@4.2.0: {}
 
@@ -4781,6 +4834,8 @@ snapshots:
 
   strip-final-newline@2.0.0: {}
 
+  strip-json-comments@2.0.1: {}
+
   strip-literal@3.1.0:
     dependencies:
       js-tokens: 9.0.1
@@ -4981,6 +5036,8 @@ snapshots:
       browserslist: 4.26.3
       escalade: 3.2.0
       picocolors: 1.1.1
+
+  urijs@1.19.11: {}
 
   util-deprecate@1.0.2: {}
 
