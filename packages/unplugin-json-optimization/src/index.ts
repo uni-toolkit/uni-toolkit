@@ -36,7 +36,8 @@ export const unpluginFactory: UnpluginFactory<Options | undefined> = (
       }
     },
     generateBundle(_: unknown, bundle: Record<string, OutputChunk | OutputAsset>) {
-      for (const [fileName, chunk] of Object.entries(bundle)) {
+      const bundleEntries = Object.entries(bundle);
+      for (const [fileName, chunk] of bundleEntries) {
         // 仅处理根目录下编译过的 JSON 文件，避免 json 文件和页面 js 文件合并
         if (chunk.type !== 'chunk' || !chunk.moduleIds || !chunk.moduleIds.length || fileName.includes('/')) {
           continue;
@@ -51,7 +52,7 @@ export const unpluginFactory: UnpluginFactory<Options | undefined> = (
       }
 
       const keys = Array.from(pathMap.keys());
-      for (const [fileName, chunk] of Object.entries(bundle)) {
+      for (const [fileName, chunk] of bundleEntries) {
         if (chunk.type !== 'chunk') {
           continue;
         }
