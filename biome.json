@@ -20,6 +20,9 @@
       },
       "suspicious": {
         "noExplicitAny": "off"
+      },
+      "correctness": {
+        "noUnusedVariables": "error"
       }
     }
   },

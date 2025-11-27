@@ -1,7 +1,6 @@
 import { getOutputJsonPath, isMiniProgram, parseVueRequest } from '@uni_toolkit/shared';
 import { createFilter, type FilterPattern } from '@rollup/pluginutils';
 const { parseJson } = require('@dcloudio/uni-cli-shared');
-import path from 'node:path';
 import fs from 'node:fs';
 import type { Compiler, Module } from 'webpack';
 import { merge } from 'lodash-es';
