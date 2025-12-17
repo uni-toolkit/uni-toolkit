@@ -8,7 +8,7 @@ export function getOutputJsonPath(filePath: string) {
 }
 
 export function isMiniProgram() {
-  return process.env.UNI_PLATFORM?.startsWith('mp-');
+  return !!process.env.UNI_PLATFORM?.startsWith('mp-');
 }
 
 export function isString(value: unknown): value is string {
