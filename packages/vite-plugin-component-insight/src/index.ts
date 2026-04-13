@@ -173,6 +173,7 @@ function detectPackageName(filePath: string, subPackageRoots: string[]) {
 }
 
 function buildMarkdown(report: ComponentInsightReport) {
+  const hasSuggestions = report.components.some((item) => item.suggestions.length > 0);
   const lines: string[] = [
     '# 组件分析报告',
     '',
@@ -181,6 +182,13 @@ function buildMarkdown(report: ComponentInsightReport) {
     `- 已分析组件数：${report.summary.reportedComponentCount}`,
     '',
   ];
+
+  if (!hasSuggestions) {
+    lines.push('## 总体评价');
+    lines.push('');
+    lines.push('- 当前项目组件配置良好，暂未发现需要关注的优化建议 🎉');
+    lines.push('');
+  }
 
   for (const item of report.components) {
     lines.push(`## ${item.component}`);
@@ -219,7 +227,7 @@ function logSummary(report: ComponentInsightReport) {
 
   const suggestionItems = report.components.filter((item) => item.suggestions.length > 0);
   if (suggestionItems.length === 0) {
-    console.info(pc.green('未发现需要关注的组件分包建议。'));
+    console.info(pc.green('当前项目组件配置良好，未发现需要关注的优化建议 🎉'));
     return;
   }
 
