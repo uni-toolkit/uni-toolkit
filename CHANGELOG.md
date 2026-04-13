@@ -1,3 +1,17 @@
+## [0.0.18](https://github.com/uni-toolkit/uni-toolkit/compare/v0.0.17...v0.0.18) (2026-04-13)
+
+
+### Code Refactoring
+
+* improve async placeholder logic and suggestions for component usage ([bd34cf3](https://github.com/uni-toolkit/uni-toolkit/commit/bd34cf34bab3417cc5d74d7fbc2484b2576ef899))
+
+
+### Features
+
+* enhance component analysis report with overall evaluation message ([9cd8c9e](https://github.com/uni-toolkit/uni-toolkit/commit/9cd8c9e5d4ee1d716756e52389110868301bff71))
+
+
+
 ## [0.0.17](https://github.com/uni-toolkit/uni-toolkit/compare/v0.0.16...v0.0.17) (2026-04-12)
 
 
