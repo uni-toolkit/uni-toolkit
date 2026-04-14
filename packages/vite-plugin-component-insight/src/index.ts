@@ -4,7 +4,7 @@ import { parseJson, parseSubpackagesRootOnce } from '@dcloudio/uni-cli-shared';
 import { isMiniProgram } from '@uni_toolkit/shared';
 import pc from 'picocolors';
 import type { PluginOption } from 'vite';
-import { createFilter } from 'vite';
+import { createFilter, type FilterPattern } from 'vite';
 
 interface PageEntry {
   path: string;
@@ -45,8 +45,8 @@ interface ComponentInsightReport {
 export interface VitePluginComponentInsightOptions {
   reportMarkdownPath?: string;
   logToConsole?: boolean;
-  exclude?: string[];
-  include?: string[];
+  exclude?: FilterPattern;
+  include?: FilterPattern;
 }
 
 interface SuggestionItem {
@@ -58,7 +58,7 @@ const DEFAULT_OPTIONS: Required<VitePluginComponentInsightOptions> = {
   reportMarkdownPath: '',
   logToConsole: true,
   exclude: ['**/node-modules/**', '**/node_modules/**', '**/uni_modules/**'],
-  include: [],
+  include: null,
 };
 
 const COMPONENT_PLACEHOLDER_GUIDE_URL = 'https://ask.dcloud.net.cn/article/42114';
@@ -329,7 +329,7 @@ export default function vitePluginComponentInsight(options: VitePluginComponentI
             continue;
           }
 
-          if (filterPath(componentRef)) {
+          if (!filterPath(path.join(outputDir, componentRef))) {
             continue;
           }
 
