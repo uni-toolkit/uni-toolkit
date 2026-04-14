@@ -4,6 +4,7 @@ import { parseJson, parseSubpackagesRootOnce } from '@dcloudio/uni-cli-shared';
 import { isMiniProgram } from '@uni_toolkit/shared';
 import pc from 'picocolors';
 import type { PluginOption } from 'vite';
+import { createFilter } from 'vite';
 
 interface PageEntry {
   path: string;
@@ -44,6 +45,8 @@ interface ComponentInsightReport {
 export interface VitePluginComponentInsightOptions {
   reportMarkdownPath?: string;
   logToConsole?: boolean;
+  exclude?: string[];
+  include?: string[];
 }
 
 interface SuggestionItem {
@@ -54,6 +57,8 @@ interface SuggestionItem {
 const DEFAULT_OPTIONS: Required<VitePluginComponentInsightOptions> = {
   reportMarkdownPath: '',
   logToConsole: true,
+  exclude: ['**/node-modules/**', '**/node_modules/**', '**/uni_modules/**'],
+  include: [],
 };
 
 const COMPONENT_PLACEHOLDER_GUIDE_URL = 'https://ask.dcloud.net.cn/article/42114';
@@ -289,6 +294,8 @@ export default function vitePluginComponentInsight(options: VitePluginComponentI
       const jsonFiles = listJsonFiles(outputDir);
       const outputJsonMap = new Map<string, OutputJsonRecord>();
 
+      const flutterPath = createFilter(resolvedOptions.include, resolvedOptions.exclude);
+
       for (const jsonFile of jsonFiles) {
         const jsonRelativePath = normalizeSlashes(path.relative(outputDir, jsonFile));
         const jsonContent = readJsonFile<{
@@ -321,6 +328,11 @@ export default function vitePluginComponentInsight(options: VitePluginComponentI
           if (!childJsonRelativePath) {
             continue;
           }
+
+          if (flutterPath(componentRef)) {
+            continue;
+          }
+
           const childRecord = outputJsonMap.get(childJsonRelativePath);
           if (!childRecord?.isComponent) {
             continue;

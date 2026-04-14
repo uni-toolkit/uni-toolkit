@@ -61,11 +61,15 @@ componentInsight({
 interface VitePluginComponentInsightOptions {
   reportMarkdownPath?: string;
   logToConsole?: boolean;
+  exclude?: string[];
+  include?: string[];
 }
 ```
 
 - reportMarkdownPath: 自定义 Markdown 报告输出路径，不传则不生成 Markdown
 - logToConsole: 是否输出控制台日志，默认开启
+- exclude: 指定过滤的文件，默认过滤  node_modules 和 uni_modules
+- include: 指定包含的文件, 默认为空
 
 ## 许可证
 
