@@ -1,3 +1,12 @@
+## [0.0.20](https://github.com/uni-toolkit/uni-toolkit/compare/v0.0.19...v0.0.20) (2026-04-14)
+
+
+### Bug Fixes
+
+* update exclude and include options to support ReadonlyArray and RegExp types ([96a396b](https://github.com/uni-toolkit/uni-toolkit/commit/96a396b5e50ab582af701b4c77a0987a88eb9748))
+
+
+
 ## [0.0.19](https://github.com/uni-toolkit/uni-toolkit/compare/v0.0.18...v0.0.19) (2026-04-14)
 
 
