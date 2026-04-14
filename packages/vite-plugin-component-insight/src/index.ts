@@ -294,7 +294,7 @@ export default function vitePluginComponentInsight(options: VitePluginComponentI
       const jsonFiles = listJsonFiles(outputDir);
       const outputJsonMap = new Map<string, OutputJsonRecord>();
 
-      const flutterPath = createFilter(resolvedOptions.include, resolvedOptions.exclude);
+      const filterPath = createFilter(resolvedOptions.include, resolvedOptions.exclude);
 
       for (const jsonFile of jsonFiles) {
         const jsonRelativePath = normalizeSlashes(path.relative(outputDir, jsonFile));
@@ -329,7 +329,7 @@ export default function vitePluginComponentInsight(options: VitePluginComponentI
             continue;
           }
 
-          if (flutterPath(componentRef)) {
+          if (filterPath(componentRef)) {
             continue;
           }
 
