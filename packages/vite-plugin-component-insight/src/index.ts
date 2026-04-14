@@ -29,7 +29,7 @@ interface ComponentInsightItem {
     packageName: string;
     usageCount: number;
   }>;
-  suggestions: string[];
+  suggestions: SuggestionItem[];
 }
 
 interface ComponentInsightReport {
@@ -46,10 +46,17 @@ export interface VitePluginComponentInsightOptions {
   logToConsole?: boolean;
 }
 
+interface SuggestionItem {
+  message: string;
+  docUrl?: string;
+}
+
 const DEFAULT_OPTIONS: Required<VitePluginComponentInsightOptions> = {
   reportMarkdownPath: '',
   logToConsole: true,
 };
+
+const COMPONENT_PLACEHOLDER_GUIDE_URL = 'https://ask.dcloud.net.cn/article/42114';
 
 function normalizeSlashes(value: string) {
   return value.replace(/\\/g, '/');
@@ -65,6 +72,14 @@ function resolveOutputPath(outputPath: string) {
 
 function ensureParentDir(filePath: string) {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
+}
+
+function formatTerminalLink(label: string, url: string) {
+  if (!process.stdout.isTTY || process.env.TERM === 'dumb') {
+    return `${label}: ${url}`;
+  }
+
+  return `\u001B]8;;${url}\u0007${label}\u001B]8;;\u0007`;
 }
 
 function readJsonFile<T>(filePath: string): T | null {
@@ -207,7 +222,8 @@ function buildMarkdown(report: ComponentInsightReport) {
       lines.push('### 提示');
       lines.push('');
       for (const suggestion of item.suggestions) {
-        lines.push(`- ${suggestion}`);
+        const reference = suggestion.docUrl ? ` [分包异步化指南](${suggestion.docUrl})` : '';
+        lines.push(`- ${suggestion.message}${reference}`);
       }
       lines.push('');
     }
@@ -239,7 +255,8 @@ function logSummary(report: ComponentInsightReport) {
       `${pc.dim('所属包：')}${item.componentPackage}  ${pc.dim('使用次数：')}${item.totalUsageCount}  ${pc.dim('涉及包：')}${packageNames}`,
     );
     for (const suggestion of item.suggestions) {
-      console.info(`${pc.yellow('建议：')}${suggestion}`);
+      const reference = suggestion.docUrl ? ` ${pc.cyan(formatTerminalLink('分包异步化指南', suggestion.docUrl))}` : '';
+      console.info(`${pc.yellow('建议：')}${suggestion.message}${reference}`);
     }
   }
 }
@@ -383,7 +400,7 @@ export default function vitePluginComponentInsight(options: VitePluginComponentI
         const totalUsageCount = pagesForComponent.reduce((sum, page) => sum + page.usageCount, 0);
         const involvedPackages = Array.from(new Set(pagesForComponent.map((page) => page.packageName)));
         const componentPackage = detectPackageName(componentPath, subPackageRoots);
-        const suggestions: string[] = [];
+        const suggestions: SuggestionItem[] = [];
         const onlyUsedInOnePackage = involvedPackages.length === 1;
         const singlePackageName = involvedPackages[0];
         const usedByMainAndSubPackages = involvedPackages.includes('main') && involvedPackages.length > 1;
@@ -423,15 +440,24 @@ export default function vitePluginComponentInsight(options: VitePluginComponentI
         }
 
         if (onlyUsedInOnePackage && singlePackageName?.startsWith('sub:') && componentPackage === 'main') {
-          suggestions.push(`该组件仅在 ${singlePackageName} 使用，建议考虑移动到对应分包。`);
+          suggestions.push({
+            message: `该组件仅在 ${singlePackageName} 使用，建议考虑移动到对应分包。`,
+            docUrl: COMPONENT_PLACEHOLDER_GUIDE_URL,
+          });
         }
 
         if (usedByMultipleSubPackages && componentPackage === 'main') {
-          suggestions.push('该组件被多个分包使用，建议移动到分包并配置 componentPlaceholder 异步化。');
+          suggestions.push({
+            message: '该组件被多个分包使用，建议移动到分包并配置 componentPlaceholder 异步化。',
+            docUrl: COMPONENT_PLACEHOLDER_GUIDE_URL,
+          });
         }
 
         if (usedByMainAndSubPackages && componentPackage === 'main') {
-          suggestions.push('该组件同时被主包和分包使用，可考虑通过配置 componentPlaceholder 异步化的方式移动到分包。');
+          suggestions.push({
+            message: '该组件同时被主包和分包使用，建议移动到分包并配置 componentPlaceholder 异步化。',
+            docUrl: COMPONENT_PLACEHOLDER_GUIDE_URL,
+          });
         }
 
         componentItems.push({
