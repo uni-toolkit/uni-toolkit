@@ -1,3 +1,18 @@
+## [0.0.19](https://github.com/uni-toolkit/uni-toolkit/compare/v0.0.18...v0.0.19) (2026-04-14)
+
+
+### Code Refactoring
+
+* rename flutterPath to filterPath for clarity ([caf89d9](https://github.com/uni-toolkit/uni-toolkit/commit/caf89d93fff01805a8b2958e8ef3a043e79d7e5b))
+* update suggestion structure to include detailed messages and documentation links ([17ce2c8](https://github.com/uni-toolkit/uni-toolkit/commit/17ce2c8a625ad52974e733f641618a4cd3a27a89))
+
+
+### Features
+
+* **vite-plugin-component-insight:** add include and exclude options ([#9](https://github.com/uni-toolkit/uni-toolkit/issues/9)) ([2d20843](https://github.com/uni-toolkit/uni-toolkit/commit/2d208430c6ab21e76a375d4caf19ba201dd8818f))
+
+
+
 ## [0.0.18](https://github.com/uni-toolkit/uni-toolkit/compare/v0.0.17...v0.0.18) (2026-04-13)
 
 
