@@ -1,38 +1,22 @@
 # uni-app toolkit
 
-uni-app 项目设计的插件集合，提供各种实用的构建工具和开发插件。
+为 uni-app 项目设计的插件集合，提供各种实用的构建工具和开发插件。
 
 ## 📦 插件列表
 
-### @uni_toolkit/vite-plugin-component-config
+| 插件 | 适用环境 | 说明 | 文档 |
+| --- | --- | --- | --- |
+| `@uni_toolkit/vite-plugin-component-insight` | Vite | 分析组件被哪些页面使用、使用多少次，并结合主包与分包关系给出优化建议。 | [查看文档](./packages/vite-plugin-component-insight/README.md) |
+| `@uni_toolkit/vite-plugin-component-config` | Vite | 处理 Vue 文件中的 `<component-config>` 标签，将配置提取并合并到对应的小程序 JSON 文件中，可用于跨分包自定义组件引用和组件引用插件。 | [查看文档](./packages/vite-plugin-component-config/README.md) |
+| `@uni_toolkit/webpack-plugin-component-config` | Webpack | 处理 Vue 文件中的 `<component-config>` 标签，将配置提取并合并到对应的小程序 JSON 文件中，可用于跨分包自定义组件引用和组件引用插件。 | [查看文档](./packages/webpack-plugin-component-config/README.md) |
+| `@uni_toolkit/unplugin-compress-json` | Vite / Webpack | 压缩 JSON 文件，减小文件体积。 | [查看文档](./packages/unplugin-compress-json/README.md) |
+| `@uni_toolkit/unplugin-json-optimization` | Vite | 优化分包 JSON 文件生成，减小主包体积。 | [查看文档](./packages/unplugin-json-optimization/README.md) |
 
-一个用于 uni-app 项目的 `Vite 插件`，用于处理 Vue 文件中的 `<component-config>` 标签，将配置提取并合并到对应的 `小程序 JSON 文件` 中 (可用于实现 `跨分包自定义组件引用`、组件引用 `插件`)。
+## 贡献者
 
-- [@uni_toolkit/vite-plugin-component-config](./packages/vite-plugin-component-config/README.md)
+感谢这些贡献者对本仓库的支持与完善：
 
-### @uni_toolkit/webpack-plugin-component-config
-
-一个用于 uni-app 项目的 `Webpack 插件`，用于处理 Vue 文件中的 `<component-config>` 标签，将配置提取并合并到对应的 `小程序 JSON 文件` 中 (可用于实现 `跨分包自定义组件引用`、组件引用 `插件`)。
-
-- [@uni_toolkit/webpack-plugin-component-config](./packages/webpack-plugin-component-config/README.md)
-
-### @uni_toolkit/vite-plugin-component-insight
-
-一个用于 uni-app 项目的 `Vite 插件`，用于分析组件被哪些页面使用、使用多少次，并结合主包与分包关系给出优化建议。
-
-- [@uni_toolkit/vite-plugin-component-insight](./packages/vite-plugin-component-insight/README.md)
-
-### @uni_toolkit/unplugin-compress-json
-
-一个用于压缩 JSON 文件的 `unplugin 插件`，支持 Vite 和 Webpack。自动压缩 `JSON 文件` ，减小文件体积。
-
-- [@uni_toolkit/unplugin-compress-json](./packages/unplugin-compress-json/README.md)
-
-### @uni_toolkit/unplugin-json-optimization
-
-一个用于分包优化 JSON 文件生成的 unplugin 插件，支持 Vite。自动优化分包 `JSON 文件` 生成，减小主包体积。
-
-- [@uni_toolkit/unplugin-json-optimization](./packages/unplugin-json-optimization/README.md)
+[![贡献者](https://contrib.rocks/image?repo=uni-toolkit/uni-toolkit)](https://github.com/uni-toolkit/uni-toolkit/graphs/contributors)
 
 ## 交流群
 
