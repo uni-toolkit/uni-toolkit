@@ -1,4 +1,4 @@
-import { defineConfig } from 'tsdown'
+import { defineConfig } from 'tsdown';
 
 export default defineConfig({
   target: false,
@@ -15,4 +15,4 @@ export default defineConfig({
   outputOptions: {
     exports: 'named',
   },
-})
+});
