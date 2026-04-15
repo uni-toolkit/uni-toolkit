@@ -4,7 +4,9 @@
   "version": "0.0.20",
   "scripts": {
     "format": "biome format --write",
+    "format:check": "biome format .",
     "lint": "biome lint --write",
+    "lint:check": "biome lint .",
     "check": "biome check --write",
     "build": "jiti scripts/build.ts",
     "release": "pnpm build && vr release",
