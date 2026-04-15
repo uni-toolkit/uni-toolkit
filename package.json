@@ -12,6 +12,9 @@
   },
   "author": "chouchouji <1305974212@qq.com>",
   "license": "MIT",
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "devDependencies": {
     "@biomejs/biome": "2.2.6",
     "@types/node": "catalog:",
