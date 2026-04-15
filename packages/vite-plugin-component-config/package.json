@@ -37,8 +37,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch"
+    "build": "tsdown",
+    "dev": "tsdown --watch"
   },
   "dependencies": {
     "@dcloudio/uni-cli-shared": "3.0.0-alpha-4080120250820001",
@@ -48,7 +48,7 @@
   },
   "devDependencies": {
     "typescript": "catalog:",
-    "tsup": "catalog:",
+    "tsdown": "catalog:",
     "@types/node": "catalog:",
     "@types/lodash-es": "catalog:",
     "vite": "catalog:"

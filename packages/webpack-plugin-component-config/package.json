@@ -37,8 +37,8 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch"
+    "build": "tsdown",
+    "dev": "tsdown --watch"
   },
   "dependencies": {
     "@dcloudio/uni-cli-shared": "2.0.2-alpha-4080720251125002",
@@ -49,7 +49,7 @@
   },
   "devDependencies": {
     "typescript": "catalog:",
-    "tsup": "catalog:",
+    "tsdown": "catalog:",
     "@types/node": "catalog:",
     "@types/webpack": "^5.0.0",
     "@types/lodash-es": "catalog:"
