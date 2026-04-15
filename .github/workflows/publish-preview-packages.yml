@@ -1,0 +1,36 @@
+name: Publish Preview Packages
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - '!**'
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: ${{ github.repository == 'uni-toolkit/uni-toolkit' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --ignore-scripts
+
+      - name: Build
+        run: pnpm build
+
+      - name: Publish packages
+        run: pnpx pkg-pr-new publish --pnpm './packages/*' --packageManager=pnpm,npm,yarn
