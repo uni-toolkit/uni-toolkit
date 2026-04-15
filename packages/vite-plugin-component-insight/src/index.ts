@@ -3,8 +3,7 @@ import path from 'node:path';
 import { parseJson, parseSubpackagesRootOnce } from '@dcloudio/uni-cli-shared';
 import { isMiniProgram } from '@uni_toolkit/shared';
 import pc from 'picocolors';
-import type { PluginOption } from 'vite';
-import { createFilter, type FilterPattern } from 'vite';
+import { createFilter, type FilterPattern, type PluginOption } from 'vite';
 
 interface PageEntry {
   path: string;
@@ -61,7 +60,7 @@ const DEFAULT_OPTIONS: Required<VitePluginComponentInsightOptions> = {
   include: null,
 };
 
-const COMPONENT_PLACEHOLDER_GUIDE_URL = 'https://ask.dcloud.net.cn/article/42114';
+const COMPONENT_PLACEHOLDER_GUIDE_URL = 'https://mp.weixin.qq.com/s/MlwA4EKtzlKdtu_xk1TuPQ';
 
 function normalizeSlashes(value: string) {
   return value.replace(/\\/g, '/');
