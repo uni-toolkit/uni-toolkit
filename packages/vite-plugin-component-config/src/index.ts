@@ -3,7 +3,7 @@ import path from 'node:path';
 import { parseJson } from '@dcloudio/uni-cli-shared';
 import { createFilter, type FilterPattern } from '@rollup/pluginutils';
 import { getOutputJsonPath, isMiniProgram } from '@uni_toolkit/shared';
-import { merge } from 'lodash-es';
+import { merge } from 'rattail';
 import type { PluginOption } from 'vite';
 
 export interface ComponentConfigPluginOptions {

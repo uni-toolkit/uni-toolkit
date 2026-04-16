@@ -4,7 +4,7 @@ import { getOutputJsonPath, isMiniProgram, parseVueRequest } from '@uni_toolkit/
 const { parseJson } = require('@dcloudio/uni-cli-shared');
 
 import fs from 'node:fs';
-import { merge } from 'lodash-es';
+import { merge } from 'rattail';
 import type { Compiler, Module } from 'webpack';
 
 export interface ComponentConfigPluginOptions {
