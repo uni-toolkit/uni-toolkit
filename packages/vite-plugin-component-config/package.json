@@ -43,14 +43,12 @@
   "dependencies": {
     "@dcloudio/uni-cli-shared": "3.0.0-alpha-4080120250820001",
     "@uni_toolkit/shared": "workspace:*",
-    "@rollup/pluginutils": "catalog:",
-    "lodash-es": "catalog:"
+    "@rollup/pluginutils": "catalog:"
   },
   "devDependencies": {
     "typescript": "catalog:",
     "tsdown": "catalog:",
     "@types/node": "catalog:",
-    "@types/lodash-es": "catalog:",
     "vite": "catalog:"
   },
   "peerDependencies": {

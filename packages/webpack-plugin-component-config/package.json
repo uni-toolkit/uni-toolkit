@@ -44,15 +44,13 @@
     "@dcloudio/uni-cli-shared": "2.0.2-alpha-4080720251125002",
     "@uni_toolkit/shared": "workspace:*",
     "@rollup/pluginutils": "catalog:",
-    "webpack": "catalog:",
-    "lodash-es": "catalog:"
+    "webpack": "catalog:"
   },
   "devDependencies": {
     "typescript": "catalog:",
     "tsdown": "catalog:",
     "@types/node": "catalog:",
-    "@types/webpack": "^5.0.0",
-    "@types/lodash-es": "catalog:"
+    "@types/webpack": "^5.0.0"
   },
   "peerDependencies": {
     "webpack": "^5.0.0"
