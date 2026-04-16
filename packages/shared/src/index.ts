@@ -11,10 +11,6 @@ export function isMiniProgram() {
   return !!process.env.UNI_PLATFORM?.startsWith('mp-');
 }
 
-export function isString(value: unknown): value is string {
-  return typeof value === 'string';
-}
-
 export interface VueQuery {
   vue?: boolean;
   src?: boolean;
