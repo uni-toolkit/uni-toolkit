@@ -2,8 +2,11 @@
 
 一个用于 UniApp 项目的 Webpack 插件，用于处理 Vue 文件中的 `<component-config>` 标签，将配置提取并合并到对应的 `小程序 JSON 文件` 中。
 
-> [!TIP]
+> [!WARNING]
 > **Node.js** >= 20.19.0
+
+> [!TIP]
+> **HBuild X 4.8.7** 及以上版本推荐使用v0.0.14
 
 ## 功能特性
 
