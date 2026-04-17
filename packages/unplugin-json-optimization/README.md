@@ -2,6 +2,11 @@
 
 一个用于分包优化 JSON 文件生成的 unplugin 插件，支持 Vite。
 
+> [!WARNING]
+> 该包（`unplugin-json-optimization`）已废弃，不再维护。
+>
+> 建议将 JSON 文件手动处理为 JavaScript 文件
+
 ## 功能特性
 
 - 🗜️ **自动优化产物** - 自动优化分包 JSON 文件的生成
