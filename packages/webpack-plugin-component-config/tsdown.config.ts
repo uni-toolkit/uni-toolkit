@@ -12,6 +12,6 @@ export default defineConfig({
     exports: 'named',
   },
   deps: {
-    alwaysBundle: ['rattail']
-  }
+    alwaysBundle: ['rattail'],
+  },
 });
