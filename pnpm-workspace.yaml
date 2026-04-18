@@ -8,4 +8,4 @@ catalog:
   vite: 5.2.8
   webpack: ^5.98.0
   '@rollup/pluginutils': ^5.3.0
-  rattail: ^2.0.3
+  rattail: 1.0.8

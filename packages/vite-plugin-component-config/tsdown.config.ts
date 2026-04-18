@@ -8,4 +8,7 @@ export default defineConfig({
   clean: true,
   target: false,
   fixedExtension: false,
+  deps: {
+    alwaysBundle: ['rattail']
+  }
 });
