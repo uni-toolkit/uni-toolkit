@@ -8,4 +8,7 @@ export default defineConfig({
   dts: true,
   target: false,
   fixedExtension: false,
+  outputOptions: {
+    exports: 'named',
+  },
 });
