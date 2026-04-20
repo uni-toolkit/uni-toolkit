@@ -18,7 +18,7 @@ export class WebpackComponentConfigPlugin {
   private set: Set<string> = new Set();
 
   constructor(options: ComponentConfigPluginOptions = {}) {
-    this.filter = createFilter(options.include || ['**/*.{vue,nvue,uvue}'], options.exclude);
+    this.filter = createFilter(options.include || ['**/*.{vue,nvue}'], options.exclude);
   }
 
   apply(compiler: Compiler) {
@@ -63,7 +63,7 @@ export class WebpackComponentConfigPlugin {
       matches.forEach((match) => {
         const configContent = match.replace(/<component-config>|<\/component-config>/g, '');
         try {
-          const componentConfig = parseJson(configContent.toString());
+          const componentConfig = parseJson(configContent.toString(), true);
 
           const outputPath = getOutputJsonPath(resource);
           this.map.set(outputPath, componentConfig);
