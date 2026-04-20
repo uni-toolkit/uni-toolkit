@@ -1,3 +1,19 @@
+## [0.0.21](https://github.com/uni-toolkit/uni-toolkit/compare/v0.0.20...v0.0.21) (2026-04-20)
+
+
+### Bug Fixes
+
+* downgrade rattail dependency from ^2.0.3 to 1.0.8 ([b507b37](https://github.com/uni-toolkit/uni-toolkit/commit/b507b373088debc773c766fd440b0473d980698a))
+* update parseJson function to enable strict parsing mode ([b9faa2f](https://github.com/uni-toolkit/uni-toolkit/commit/b9faa2fa3307ebdf21a4873f81822f41e99a8613))
+
+
+### Code Refactoring
+
+* remove unused isString function from index.ts ([eb7a503](https://github.com/uni-toolkit/uni-toolkit/commit/eb7a503b47308e079ab190b17868fad12c76944f))
+* update COMPONENT_PLACEHOLDER_GUIDE_URL to point to the correct documentation link ([8562301](https://github.com/uni-toolkit/uni-toolkit/commit/856230192e786ecaa783e9dd32090a07e481bce7))
+
+
+
 ## [0.0.20](https://github.com/uni-toolkit/uni-toolkit/compare/v0.0.19...v0.0.20) (2026-04-14)
 
 
