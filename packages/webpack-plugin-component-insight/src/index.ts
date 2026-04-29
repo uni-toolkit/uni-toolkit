@@ -1,0 +1,538 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { createFilter, type FilterPattern } from '@rollup/pluginutils';
+import { isMiniProgram } from '@uni_toolkit/shared';
+import pc from 'picocolors';
+import type { Compiler } from 'webpack';
+
+type ParseJson = (content: string, preprocess?: boolean) => unknown;
+
+interface PageEntry {
+  path: string;
+  packageRoot: string;
+  packageName: string;
+}
+
+interface OutputJsonRecord {
+  jsonRelativePath: string;
+  logicalPath: string;
+  isComponent: boolean;
+  usingComponents: Record<string, string>;
+  componentPlaceholder: Record<string, string>;
+}
+
+interface ComponentInsightItem {
+  component: string;
+  componentPackage: string;
+  totalUsageCount: number;
+  pageUsageCount: number;
+  pages: Array<{
+    page: string;
+    packageName: string;
+    usageCount: number;
+  }>;
+  suggestions: SuggestionItem[];
+}
+
+interface ComponentInsightReport {
+  summary: {
+    pageCount: number;
+    componentCount: number;
+    reportedComponentCount: number;
+  };
+  components: ComponentInsightItem[];
+}
+
+export interface WebpackPluginComponentInsightOptions {
+  reportMarkdownPath?: string;
+  logToConsole?: boolean;
+  exclude?: FilterPattern;
+  include?: FilterPattern;
+}
+
+interface SuggestionItem {
+  message: string;
+  docUrl?: string;
+}
+
+const PLUGIN_NAME = 'WebpackComponentInsightPlugin';
+const COMPONENT_PLACEHOLDER_GUIDE_URL = 'https://mp.weixin.qq.com/s/MlwA4EKtzlKdtu_xk1TuPQ';
+const DEFAULT_OPTIONS: Required<WebpackPluginComponentInsightOptions> = {
+  reportMarkdownPath: '',
+  logToConsole: true,
+  exclude: ['**/node-modules/**', '**/node_modules/**', '**/uni_modules/**'],
+  include: null,
+};
+
+let parseJson: ParseJson | undefined;
+
+function getParseJson() {
+  if (!parseJson) {
+    parseJson = (require('@dcloudio/uni-cli-shared/lib/json') as { parseJson: ParseJson }).parseJson;
+  }
+
+  return parseJson;
+}
+
+function normalizeSlashes(value: string) {
+  return value.replace(/\\/g, '/');
+}
+
+function normalizePackageRoot(value: string) {
+  return normalizeSlashes(value).replace(/^\/+|\/+$/g, '');
+}
+
+function stripJsonExtension(filePath: string) {
+  return filePath.replace(/\.json$/i, '');
+}
+
+function resolveOutputPath(outputPath: string) {
+  return path.isAbsolute(outputPath) ? outputPath : path.join(process.cwd(), outputPath);
+}
+
+function ensureParentDir(filePath: string) {
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+}
+
+function formatTerminalLink(label: string, url: string) {
+  if (!process.stdout.isTTY || process.env.TERM === 'dumb') {
+    return `${label}: ${url}`;
+  }
+
+  return `\u001B]8;;${url}\u0007${label}\u001B]8;;\u0007`;
+}
+
+function readJsonFile<T>(filePath: string, preprocess = false): T | null {
+  if (!fs.existsSync(filePath)) {
+    return null;
+  }
+
+  const content = fs.readFileSync(filePath, 'utf-8');
+  return getParseJson()(content, preprocess) as T;
+}
+
+function getSubPackages(
+  pagesJson: {
+    subPackages?: Array<{ root?: string; pages?: Array<{ path: string }> }>;
+    subpackages?: Array<{ root?: string; pages?: Array<{ path: string }> }>;
+  } | null,
+) {
+  return [...(pagesJson?.subPackages ?? []), ...(pagesJson?.subpackages ?? [])];
+}
+
+function parseSubpackagesRootOnce(
+  pagesJson: {
+    subPackages?: Array<{ root?: string }>;
+    subpackages?: Array<{ root?: string }>;
+  } | null,
+) {
+  const roots = getSubPackages(pagesJson)
+    .map((subPackage) => normalizePackageRoot(subPackage.root ?? ''))
+    .filter(Boolean);
+
+  return Array.from(new Set(roots));
+}
+
+function readPages(inputDir: string) {
+  const pagesJsonPath = path.join(inputDir, 'pages.json');
+  const pagesJson = readJsonFile<{
+    pages?: Array<{ path: string }>;
+    subPackages?: Array<{ root?: string; pages?: Array<{ path: string }> }>;
+    subpackages?: Array<{ root?: string; pages?: Array<{ path: string }> }>;
+  }>(pagesJsonPath, true);
+  const subPackageRoots = parseSubpackagesRootOnce(pagesJson);
+
+  const pages: PageEntry[] = [];
+  for (const page of pagesJson?.pages ?? []) {
+    if (!page.path) {
+      continue;
+    }
+    pages.push({
+      path: normalizeSlashes(page.path),
+      packageRoot: '',
+      packageName: 'main',
+    });
+  }
+
+  for (const subPackage of getSubPackages(pagesJson)) {
+    const root = normalizePackageRoot(subPackage.root ?? '');
+    if (!root) {
+      continue;
+    }
+
+    for (const page of subPackage.pages ?? []) {
+      if (!page.path) {
+        continue;
+      }
+      pages.push({
+        path: normalizeSlashes(path.posix.join(root, page.path)),
+        packageRoot: root,
+        packageName: `sub:${root}`,
+      });
+    }
+  }
+
+  return {
+    pages,
+    subPackageRoots,
+  };
+}
+
+function listJsonFiles(dirPath: string, files: string[] = []) {
+  for (const entry of fs.readdirSync(dirPath, { withFileTypes: true })) {
+    const absolutePath = path.join(dirPath, entry.name);
+    if (entry.isDirectory()) {
+      listJsonFiles(absolutePath, files);
+      continue;
+    }
+    if (entry.isFile() && entry.name.endsWith('.json')) {
+      files.push(absolutePath);
+    }
+  }
+
+  return files;
+}
+
+function resolveUsingComponentPath(currentJsonRelativePath: string, componentRef: string, outputDir: string) {
+  if (!componentRef || /^(plugin|ext):\/\//.test(componentRef)) {
+    return null;
+  }
+
+  const cleanRef = componentRef.replace(/\.(json|vue|nvue|uvue)$/i, '');
+  const resolvedAbsolutePath = cleanRef.startsWith('/')
+    ? path.join(outputDir, cleanRef.slice(1))
+    : path.resolve(path.dirname(path.join(outputDir, currentJsonRelativePath)), cleanRef);
+
+  return normalizeSlashes(path.relative(outputDir, `${resolvedAbsolutePath}.json`));
+}
+
+function detectPackageName(filePath: string, subPackageRoots: string[]) {
+  const normalized = normalizeSlashes(filePath);
+  let matchedRoot = '';
+  let matchedPackageName = 'main';
+
+  for (const root of subPackageRoots) {
+    if (!root) {
+      continue;
+    }
+    const rootWithSlash = `${root}/`;
+    if (normalized.startsWith(rootWithSlash) && root.length > matchedRoot.length) {
+      matchedRoot = root;
+      matchedPackageName = `sub:${root}`;
+    }
+  }
+
+  return matchedPackageName;
+}
+
+function buildMarkdown(report: ComponentInsightReport) {
+  const hasSuggestions = report.components.some((item) => item.suggestions.length > 0);
+  const lines: string[] = [
+    '# 组件分析报告',
+    '',
+    `- 页面数量：${report.summary.pageCount}`,
+    `- 组件数量：${report.summary.componentCount}`,
+    `- 已分析组件数：${report.summary.reportedComponentCount}`,
+    '',
+  ];
+
+  if (!hasSuggestions) {
+    lines.push('## 总体评价');
+    lines.push('');
+    lines.push('- 当前项目组件配置良好，暂未发现需要关注的优化建议 🎉');
+    lines.push('');
+  }
+
+  for (const item of report.components) {
+    lines.push(`## ${item.component}`);
+    lines.push('');
+    lines.push(`- 所属包：${item.componentPackage}`);
+    lines.push(`- 总使用次数：${item.totalUsageCount}`);
+    lines.push(`- 使用页面数：${item.pageUsageCount}`);
+    lines.push('');
+    lines.push('| 页面 | 包 | 使用次数 |');
+    lines.push('| --- | --- | --- |');
+    for (const page of item.pages) {
+      lines.push(`| ${page.page} | ${page.packageName} | ${page.usageCount} |`);
+    }
+    lines.push('');
+    if (item.suggestions.length > 0) {
+      lines.push('### 提示');
+      lines.push('');
+      for (const suggestion of item.suggestions) {
+        const reference = suggestion.docUrl ? ` [分包异步化指南](${suggestion.docUrl})` : '';
+        lines.push(`- ${suggestion.message}${reference}`);
+      }
+      lines.push('');
+    }
+  }
+
+  return lines.join('\n');
+}
+
+function logSummary(report: ComponentInsightReport) {
+  const summaryLines = [
+    pc.bold(pc.green('[webpack-plugin-component-insight] 分析完成')),
+    `页面数: ${pc.cyan(String(report.summary.pageCount))}`,
+    `组件数: ${pc.cyan(String(report.summary.componentCount))}`,
+    `已分析: ${pc.cyan(String(report.summary.reportedComponentCount))}`,
+  ];
+  console.info(summaryLines.join(' | '));
+
+  const suggestionItems = report.components.filter((item) => item.suggestions.length > 0);
+  if (suggestionItems.length === 0) {
+    console.info(pc.green('当前项目组件配置良好，未发现需要关注的优化建议 🎉'));
+    return;
+  }
+
+  for (const item of suggestionItems) {
+    const packageNames = Array.from(new Set(item.pages.map((page) => page.packageName))).join(', ');
+    console.info('');
+    console.info(pc.bold(pc.blue(`组件：${item.component}`)));
+    console.info(
+      `${pc.dim('所属包：')}${item.componentPackage}  ${pc.dim('使用次数：')}${item.totalUsageCount}  ${pc.dim('涉及包：')}${packageNames}`,
+    );
+    for (const suggestion of item.suggestions) {
+      const reference = suggestion.docUrl ? ` ${pc.cyan(formatTerminalLink('分包异步化指南', suggestion.docUrl))}` : '';
+      console.info(`${pc.yellow('建议：')}${suggestion.message}${reference}`);
+    }
+  }
+}
+
+export class WebpackComponentInsightPlugin {
+  private readonly options: Required<WebpackPluginComponentInsightOptions>;
+  private readonly reportMarkdownPath: string;
+
+  constructor(options: WebpackPluginComponentInsightOptions = {}) {
+    this.options = {
+      ...DEFAULT_OPTIONS,
+      ...options,
+    };
+    this.reportMarkdownPath = this.options.reportMarkdownPath ? resolveOutputPath(this.options.reportMarkdownPath) : '';
+  }
+
+  apply(compiler: Compiler) {
+    if (!isMiniProgram()) {
+      return;
+    }
+
+    compiler.hooks.afterEmit.tap(PLUGIN_NAME, () => {
+      this.generateReport();
+    });
+  }
+
+  private generateReport() {
+    const inputDir = process.env.UNI_INPUT_DIR;
+    const outputDir = process.env.UNI_OUTPUT_DIR;
+    if (!inputDir || !outputDir || !fs.existsSync(outputDir)) {
+      return;
+    }
+
+    const { pages, subPackageRoots } = readPages(inputDir);
+    const pagePathMap = new Map(pages.map((page) => [page.path, page]));
+    const jsonFiles = listJsonFiles(outputDir);
+    const outputJsonMap = new Map<string, OutputJsonRecord>();
+    const filterPath = createFilter(this.options.include, this.options.exclude);
+
+    for (const jsonFile of jsonFiles) {
+      const jsonRelativePath = normalizeSlashes(path.relative(outputDir, jsonFile));
+      const jsonContent = readJsonFile<{
+        component?: boolean;
+        usingComponents?: Record<string, string>;
+        componentPlaceholder?: Record<string, string>;
+      }>(jsonFile);
+
+      if (!jsonContent) {
+        continue;
+      }
+
+      outputJsonMap.set(jsonRelativePath, {
+        jsonRelativePath,
+        logicalPath: stripJsonExtension(jsonRelativePath),
+        isComponent: jsonContent.component === true,
+        usingComponents: jsonContent.usingComponents ?? {},
+        componentPlaceholder: jsonContent.componentPlaceholder ?? {},
+      });
+    }
+
+    const directUsageGraph = new Map<string, Map<string, number>>();
+    const asyncPlaceholderPackagesMap = new Map<string, Set<string>>();
+    for (const record of outputJsonMap.values()) {
+      const directUsage = new Map<string, number>();
+      const ownerPackage = detectPackageName(record.logicalPath, subPackageRoots);
+
+      for (const [componentName, componentRef] of Object.entries(record.usingComponents)) {
+        const childJsonRelativePath = resolveUsingComponentPath(record.jsonRelativePath, componentRef, outputDir);
+        if (!childJsonRelativePath) {
+          continue;
+        }
+
+        if (!filterPath(path.join(outputDir, componentRef))) {
+          continue;
+        }
+
+        const childRecord = outputJsonMap.get(childJsonRelativePath);
+        if (!childRecord?.isComponent) {
+          continue;
+        }
+        directUsage.set(childRecord.logicalPath, (directUsage.get(childRecord.logicalPath) ?? 0) + 1);
+
+        if (record.componentPlaceholder[componentName]) {
+          const packages = asyncPlaceholderPackagesMap.get(childRecord.logicalPath) ?? new Set<string>();
+          packages.add(ownerPackage);
+          asyncPlaceholderPackagesMap.set(childRecord.logicalPath, packages);
+        }
+      }
+
+      directUsageGraph.set(record.logicalPath, directUsage);
+    }
+
+    const aggregateCache = new Map<string, Map<string, number>>();
+    const visiting = new Set<string>();
+
+    const resolveAggregateUsage = (logicalPath: string): Map<string, number> => {
+      const cached = aggregateCache.get(logicalPath);
+      if (cached) {
+        return cached;
+      }
+      if (visiting.has(logicalPath)) {
+        return new Map();
+      }
+
+      visiting.add(logicalPath);
+      const aggregate = new Map<string, number>();
+      const directUsage = directUsageGraph.get(logicalPath) ?? new Map<string, number>();
+
+      for (const [childPath, directCount] of directUsage) {
+        aggregate.set(childPath, (aggregate.get(childPath) ?? 0) + directCount);
+        const childAggregate = resolveAggregateUsage(childPath);
+        for (const [descendantPath, descendantCount] of childAggregate) {
+          aggregate.set(descendantPath, (aggregate.get(descendantPath) ?? 0) + directCount * descendantCount);
+        }
+      }
+
+      visiting.delete(logicalPath);
+      aggregateCache.set(logicalPath, aggregate);
+      return aggregate;
+    };
+
+    const pageUsageMap = new Map<string, Map<string, number>>();
+    for (const page of pages) {
+      const pageRecord = outputJsonMap.get(`${page.path}.json`);
+      if (!pageRecord) {
+        continue;
+      }
+      pageUsageMap.set(page.path, resolveAggregateUsage(pageRecord.logicalPath));
+    }
+
+    const componentUsageMap = new Map<string, Map<string, number>>();
+    for (const [pagePath, componentUsage] of pageUsageMap) {
+      for (const [componentPath, count] of componentUsage) {
+        let pageUsage = componentUsageMap.get(componentPath);
+        if (!pageUsage) {
+          pageUsage = new Map();
+          componentUsageMap.set(componentPath, pageUsage);
+        }
+        pageUsage.set(pagePath, (pageUsage.get(pagePath) ?? 0) + count);
+      }
+    }
+
+    const componentItems: ComponentInsightItem[] = [];
+    for (const [componentPath, pageUsage] of componentUsageMap) {
+      const pagesForComponent = Array.from(pageUsage.entries())
+        .map(([pagePath, usageCount]) => ({
+          page: pagePath,
+          packageName: pagePathMap.get(pagePath)?.packageName ?? 'main',
+          usageCount,
+        }))
+        .sort((left, right) => right.usageCount - left.usageCount || left.page.localeCompare(right.page));
+
+      const totalUsageCount = pagesForComponent.reduce((sum, page) => sum + page.usageCount, 0);
+      const involvedPackages = Array.from(new Set(pagesForComponent.map((page) => page.packageName)));
+      const componentPackage = detectPackageName(componentPath, subPackageRoots);
+      const suggestions: SuggestionItem[] = [];
+      const onlyUsedInOnePackage = involvedPackages.length === 1;
+      const singlePackageName = involvedPackages[0];
+      const usedByMainAndSubPackages = involvedPackages.includes('main') && involvedPackages.length > 1;
+      const usedByMultipleSubPackages = !involvedPackages.includes('main') && involvedPackages.length > 1;
+      const asyncPlaceholderPackages = asyncPlaceholderPackagesMap.get(componentPath) ?? new Set<string>();
+      const crossPackageUsageCoveredByAsyncPlaceholder =
+        componentPackage !== 'main' &&
+        involvedPackages.length > 0 &&
+        involvedPackages
+          .filter((packageName) => packageName !== componentPackage)
+          .every((packageName) => asyncPlaceholderPackages.has(packageName));
+      const coveredBySingleAsyncPlaceholder =
+        onlyUsedInOnePackage &&
+        componentPackage !== singlePackageName &&
+        asyncPlaceholderPackages.has(singlePackageName);
+      const coveredByAsyncPlaceholder =
+        usedByMultipleSubPackages && involvedPackages.every((packageName) => asyncPlaceholderPackages.has(packageName));
+      const noNeedSuggestion =
+        (onlyUsedInOnePackage && componentPackage === singlePackageName) ||
+        (usedByMainAndSubPackages && componentPackage !== 'main') ||
+        crossPackageUsageCoveredByAsyncPlaceholder ||
+        coveredBySingleAsyncPlaceholder ||
+        coveredByAsyncPlaceholder;
+
+      if (!noNeedSuggestion) {
+        if (onlyUsedInOnePackage && singlePackageName?.startsWith('sub:') && componentPackage === 'main') {
+          suggestions.push({
+            message: `该组件仅在 ${singlePackageName} 使用，建议考虑移动到对应分包。`,
+            docUrl: COMPONENT_PLACEHOLDER_GUIDE_URL,
+          });
+        }
+
+        if (usedByMultipleSubPackages && componentPackage === 'main') {
+          suggestions.push({
+            message: '该组件被多个分包使用，建议移动到分包并配置 componentPlaceholder 异步化。',
+            docUrl: COMPONENT_PLACEHOLDER_GUIDE_URL,
+          });
+        }
+
+        if (usedByMainAndSubPackages && componentPackage === 'main') {
+          suggestions.push({
+            message: '该组件同时被主包和分包使用，建议移动到分包并配置 componentPlaceholder 异步化。',
+            docUrl: COMPONENT_PLACEHOLDER_GUIDE_URL,
+          });
+        }
+      }
+
+      componentItems.push({
+        component: componentPath,
+        componentPackage,
+        totalUsageCount,
+        pageUsageCount: pagesForComponent.length,
+        pages: pagesForComponent,
+        suggestions,
+      });
+    }
+
+    componentItems.sort(
+      (left, right) =>
+        right.totalUsageCount - left.totalUsageCount ||
+        right.pageUsageCount - left.pageUsageCount ||
+        left.component.localeCompare(right.component),
+    );
+
+    const report: ComponentInsightReport = {
+      summary: {
+        pageCount: pageUsageMap.size,
+        componentCount: Array.from(outputJsonMap.values()).filter((item) => item.isComponent).length,
+        reportedComponentCount: componentItems.length,
+      },
+      components: componentItems,
+    };
+
+    if (this.reportMarkdownPath) {
+      ensureParentDir(this.reportMarkdownPath);
+      fs.writeFileSync(this.reportMarkdownPath, `${buildMarkdown(report)}\n`, 'utf-8');
+    }
+
+    if (this.options.logToConsole) {
+      logSummary(report);
+    }
+  }
+}
+
+export default WebpackComponentInsightPlugin;

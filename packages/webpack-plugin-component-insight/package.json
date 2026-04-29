@@ -1,0 +1,62 @@
+{
+  "name": "@uni_toolkit/webpack-plugin-component-insight",
+  "version": "0.0.20",
+  "license": "MIT",
+  "author": "chouchouji <1305974212@qq.com>",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "keywords": [
+    "uni-app",
+    "vue2",
+    "miniprogram",
+    "webpack",
+    "plugin",
+    "component",
+    "analysis"
+  ],
+  "homepage": "https://github.com/uni-toolkit/uni-toolkit/tree/main/packages/webpack-plugin-component-insight",
+  "bugs": "https://github.com/uni-toolkit/uni-toolkit/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/uni-toolkit/uni-toolkit.git",
+    "directory": "packages/webpack-plugin-component-insight"
+  },
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch"
+  },
+  "dependencies": {
+    "@dcloudio/uni-cli-shared": "2.0.2-alpha-4080720251125002",
+    "@uni_toolkit/shared": "workspace:*",
+    "@rollup/pluginutils": "catalog:",
+    "picocolors": "^1.1.1",
+    "webpack": "catalog:"
+  },
+  "devDependencies": {
+    "typescript": "catalog:",
+    "tsdown": "catalog:",
+    "@types/node": "catalog:",
+    "@types/webpack": "^5.0.0"
+  },
+  "peerDependencies": {
+    "webpack": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  }
+}

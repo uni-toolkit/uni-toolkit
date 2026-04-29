@@ -1,0 +1,80 @@
+# @uni_toolkit/webpack-plugin-component-insight
+
+一个用于 uni-app Vue2 项目的 Webpack 插件，用于分析组件被哪些页面使用、使用了多少次，并结合主包与分包关系在控制台输出建议。
+
+> [!WARNING]
+> **Node.js** >= 20.19.0
+
+## 功能特性
+
+- 分析组件被哪些页面使用
+- 基于构建产物中的 usingComponents 统计组件依赖次数，包含嵌套组件链路
+- 结合主包和分包信息生成建议
+- 默认在控制台直接输出分析结果和建议
+- 按需输出 Markdown 报告，便于归档和二次处理
+- 兼容 uni-app Vue2 小程序构建流程
+
+## 安装
+
+```bash
+npm install @uni_toolkit/webpack-plugin-component-insight -D
+# 或
+pnpm add @uni_toolkit/webpack-plugin-component-insight -D
+# 或
+yarn add @uni_toolkit/webpack-plugin-component-insight -D
+```
+
+## 使用方法
+
+### 配置 vue.config.js
+
+```javascript
+const WebpackComponentInsightPlugin = require('@uni_toolkit/webpack-plugin-component-insight').default;
+
+module.exports = {
+  configureWebpack: {
+    plugins: [
+      new WebpackComponentInsightPlugin()
+    ]
+  }
+};
+```
+
+插件默认不会生成文件，会在控制台直接输出分析结果和建议。
+
+如果需要输出 Markdown，可以这样配置：
+
+```javascript
+new WebpackComponentInsightPlugin({
+  reportMarkdownPath: 'logs/component-insight-report.md',
+})
+```
+
+如果只想生成 Markdown、不输出控制台，可以这样配置：
+
+```javascript
+new WebpackComponentInsightPlugin({
+  logToConsole: false,
+  reportMarkdownPath: 'logs/component-insight-report.md',
+})
+```
+
+## 配置项
+
+```ts
+interface WebpackPluginComponentInsightOptions {
+  reportMarkdownPath?: string;
+  logToConsole?: boolean;
+  exclude?: ReadonlyArray<string | RegExp> | string | RegExp | null;
+  include?: ReadonlyArray<string | RegExp> | string | RegExp | null;
+}
+```
+
+- reportMarkdownPath: 自定义 Markdown 报告输出路径，不传则不生成 Markdown
+- logToConsole: 是否输出控制台日志，默认开启
+- exclude: 指定过滤的文件，默认过滤 node_modules 和 uni_modules
+- include: 指定包含的文件，默认为空
+
+## 许可证
+
+[MIT](/LICENSE)
