@@ -1,3 +1,17 @@
+# [0.1.0](https://github.com/uni-toolkit/uni-toolkit/compare/v0.0.21...v0.1.0) (2026-04-30)
+
+
+### Bug Fixes
+
+* improve log output formatting in component summary ([f778100](https://github.com/uni-toolkit/uni-toolkit/commit/f778100e7a0e39932453d36b8af37a9f82ec8f44))
+
+
+### Features
+
+* add webpack-plugin-component-insight for analyzing component usage in uni-app vue2 project ([96636d7](https://github.com/uni-toolkit/uni-toolkit/commit/96636d7de789c17eb3ad14f257c4786ab28f8ca8))
+
+
+
 ## [0.0.21](https://github.com/uni-toolkit/uni-toolkit/compare/v0.0.20...v0.0.21) (2026-04-20)
 
 
