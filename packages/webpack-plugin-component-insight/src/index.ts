@@ -277,7 +277,7 @@ function logSummary(report: ComponentInsightReport) {
     `组件数: ${pc.cyan(String(report.summary.componentCount))}`,
     `已分析: ${pc.cyan(String(report.summary.reportedComponentCount))}`,
   ];
-  console.info(summaryLines.join(' | '));
+  console.info(`\n\n${summaryLines.join(' | ')}`);
 
   const suggestionItems = report.components.filter((item) => item.suggestions.length > 0);
   if (suggestionItems.length === 0) {
