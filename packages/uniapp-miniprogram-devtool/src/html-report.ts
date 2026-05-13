@@ -10,24 +10,29 @@ function escapeHtml(value: unknown): string {
 
 export function renderHtmlReport(result: ProjectAnalysis): string {
   const pages = Object.values(result.pages);
-  const pageCards = pages.map((page) => {
-    const rows = page.keys.map((item) => {
-      const source = item.sourceName || item.generatedName || 'unknown';
-      const usage = item.wxmlUsages.map((u) => `<code>${escapeHtml(u.snippet)}</code>`).join('<br>') || '<span class="muted">not found</span>';
-      return `<tr>
+  const pageCards = pages
+    .map((page) => {
+      const rows = page.keys
+        .map((item) => {
+          const source = item.sourceName || item.generatedName || 'unknown';
+          const usage =
+            item.wxmlUsages.map((u) => `<code>${escapeHtml(u.snippet)}</code>`).join('<br>') ||
+            '<span class="muted">not found</span>';
+          return `<tr>
         <td><span class="key">${escapeHtml(item.key)}</span></td>
         <td>${escapeHtml(source)}</td>
         <td><span class="pill ${escapeHtml(item.confidence)}">${escapeHtml(item.confidence)}</span></td>
         <td><code>${escapeHtml(item.expressionSummary || item.expression)}</code></td>
         <td>${usage}</td>
       </tr>`;
-    }).join('\n');
+        })
+        .join('\n');
 
-    const sourcePreview = page.sourceMap?.sourcesContent?.[0]
-      ? `<details><summary>Source preview</summary><pre>${escapeHtml(page.sourceMap.sourcesContent[0])}</pre></details>`
-      : '';
+      const sourcePreview = page.sourceMap?.sourcesContent?.[0]
+        ? `<details><summary>Source preview</summary><pre>${escapeHtml(page.sourceMap.sourcesContent[0])}</pre></details>`
+        : '';
 
-    return `<section class="card">
+      return `<section class="card">
       <div class="card-title">
         <h2>${escapeHtml(page.page)}</h2>
         <span>${escapeHtml(page.jsFile)}</span>
@@ -38,7 +43,8 @@ export function renderHtmlReport(result: ProjectAnalysis): string {
       </table>
       ${sourcePreview}
     </section>`;
-  }).join('\n');
+    })
+    .join('\n');
 
   return `<!doctype html>
 <html lang="en">

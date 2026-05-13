@@ -1,5 +1,5 @@
-import http from 'node:http';
 import { spawn } from 'node:child_process';
+import http from 'node:http';
 
 interface TemplateNode {
   id: string;
@@ -808,7 +808,9 @@ async function listen(server: http.Server, preferredPort: number): Promise<numbe
   throw new Error(`未找到可用的本地 Web 面板端口，尝试范围：${preferredPort} - ${preferredPort + 19}`);
 }
 
-export async function startWebPanel(options: number | WebPanelOptions = Number(process.env.UNIAPPX_KEYMAP_PORT || 17890)): Promise<WebPanel> {
+export async function startWebPanel(
+  options: number | WebPanelOptions = Number(process.env.UNIAPPX_KEYMAP_PORT || 17890),
+): Promise<WebPanel> {
   const normalized = typeof options === 'number' ? { port: options } : options;
   const preferredPort = normalized.port ?? Number(process.env.UNIAPPX_KEYMAP_PORT || 17890);
   let snapshot = { ...DEFAULT_SNAPSHOT };
@@ -832,7 +834,12 @@ export async function startWebPanel(options: number | WebPanelOptions = Number(p
         })
         .catch((error) => {
           const message = error instanceof Error ? error.message : String(error);
-          snapshot = { ...snapshot, connected: false, status: `重新连接失败：${message}`, updatedAt: new Date().toISOString() };
+          snapshot = {
+            ...snapshot,
+            connected: false,
+            status: `重新连接失败：${message}`,
+            updatedAt: new Date().toISOString(),
+          };
           res.writeHead(500, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' });
           res.end(JSON.stringify({ ok: false, error: message }));
         });

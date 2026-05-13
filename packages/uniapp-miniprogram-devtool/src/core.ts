@@ -80,15 +80,60 @@ interface InferredExpression {
 
 const TEMPLATE_EXTENSIONS = ['.wxml'];
 const NATIVE_TEMPLATE_TAGS = new Set([
-  'view', 'text', 'image', 'button', 'input', 'textarea', 'scroll-view', 'swiper', 'swiper-item', 'icon',
-  'progress', 'rich-text', 'checkbox', 'checkbox-group', 'radio', 'radio-group', 'switch', 'slider', 'picker',
-  'picker-view', 'picker-view-column', 'navigator', 'form', 'label', 'map', 'canvas', 'camera', 'video', 'live-player',
-  'live-pusher', 'movable-area', 'movable-view', 'cover-view', 'cover-image', 'slot', 'block', 'template', 'ad',
-  'open-data', 'official-account', 'editor', 'page-meta', 'navigation-bar', 'match-media', 'sticky-section', 'sticky-header',
+  'view',
+  'text',
+  'image',
+  'button',
+  'input',
+  'textarea',
+  'scroll-view',
+  'swiper',
+  'swiper-item',
+  'icon',
+  'progress',
+  'rich-text',
+  'checkbox',
+  'checkbox-group',
+  'radio',
+  'radio-group',
+  'switch',
+  'slider',
+  'picker',
+  'picker-view',
+  'picker-view-column',
+  'navigator',
+  'form',
+  'label',
+  'map',
+  'canvas',
+  'camera',
+  'video',
+  'live-player',
+  'live-pusher',
+  'movable-area',
+  'movable-view',
+  'cover-view',
+  'cover-image',
+  'slot',
+  'block',
+  'template',
+  'ad',
+  'open-data',
+  'official-account',
+  'editor',
+  'page-meta',
+  'navigation-bar',
+  'match-media',
+  'sticky-section',
+  'sticky-header',
 ]);
 
 const GENERATED_PATTERNS: GeneratedPattern[] = [
-  { re: /\bsei\s*\(\s*common_vendor\.gei|common_vendor\.sei\s*\(\s*common_vendor\.gei|\bgei\s*\(/, name: 'generated element id', kind: 'element-id' },
+  {
+    re: /\bsei\s*\(\s*common_vendor\.gei|common_vendor\.sei\s*\(\s*common_vendor\.gei|\bgei\s*\(/,
+    name: 'generated element id',
+    kind: 'element-id',
+  },
   { re: /common_assets\._imports_\d+|\b_imports_\d+\b/, name: 'generated static asset', kind: 'static-asset' },
   { re: /u_s_b_h/, name: 'generated CSS var --status-bar-height', kind: 'css-var' },
   { re: /u_s_a_i_b/, name: 'generated CSS var --uni-safe-area-inset-bottom', kind: 'css-var' },
@@ -262,10 +307,12 @@ function extractRenderReturnObject(js: string): string | null {
 
 function extractSetupRenderReturnObject(js: string): string | null {
   const re = /return\s*\([^)]*\)\s*=>\s*\{/g;
-  let match: RegExpExecArray | null;
+  let match: RegExpExecArray | null = re.exec(js);
 
-  while ((match = re.exec(js))) {
-    const open = js.indexOf('{', match.index);
+  while (match) {
+    const currentMatch = match;
+    match = re.exec(js);
+    const open = js.indexOf('{', currentMatch.index);
     if (open === -1) continue;
     const close = findMatchingBrace(js, open);
     if (close === -1) continue;
@@ -395,13 +442,16 @@ function extractSetupBindings(js: string): Set<string> {
   const blocked = new Set(['__returned__', 'common_vendor', '_sfc_main']);
   const variableRe = /\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\b/g;
   const functionRe = /\bfunction\s+([A-Za-z_$][\w$]*)\s*\(/g;
-  let match: RegExpExecArray | null;
+  let match: RegExpExecArray | null = variableRe.exec(js);
 
-  while ((match = variableRe.exec(js))) {
+  while (match) {
     if (!blocked.has(match[1])) names.add(match[1]);
+    match = variableRe.exec(js);
   }
-  while ((match = functionRe.exec(js))) {
+  match = functionRe.exec(js);
+  while (match) {
     if (!blocked.has(match[1])) names.add(match[1]);
+    match = functionRe.exec(js);
   }
   return names;
 }
@@ -507,15 +557,16 @@ function findWxmlUsages(wxml: string, key: string): WxmlUsage[] {
   if (!wxml) return [];
   const usages: WxmlUsage[] = [];
   const re = new RegExp(`(^|[^A-Za-z0-9_$])${escapeRegExp(key)}([^A-Za-z0-9_$]|$)`, 'g');
-  let match: RegExpExecArray | null;
+  let match: RegExpExecArray | null = re.exec(wxml);
 
-  while ((match = re.exec(wxml))) {
+  while (match) {
     const index = match.index + match[1].length;
     const start = Math.max(0, index - 45);
     const end = Math.min(wxml.length, index + key.length + 45);
     const snippet = wxml.slice(start, end).replace(/\s+/g, ' ').trim();
     usages.push({ index, snippet });
     if (usages.length >= 8) break;
+    match = re.exec(wxml);
   }
   return usages;
 }
@@ -542,12 +593,13 @@ function parseTemplateAttributes(source: string): TemplateAttribute[] {
   const attrs: TemplateAttribute[] = [];
   const attrSource = source.replace(/^<[^/\s>]+/, '').replace(/\/?>$/, '');
   const re = /([:@A-Za-z0-9._-]+)(?:=(?:"([^"]*)"|'([^']*)'))?/g;
-  let match: RegExpExecArray | null;
-  while ((match = re.exec(attrSource))) {
+  let match: RegExpExecArray | null = re.exec(attrSource);
+  while (match) {
     attrs.push({
       name: match[1],
       value: match[2] ?? match[3] ?? '',
     });
+    match = re.exec(attrSource);
   }
   return attrs;
 }
@@ -568,24 +620,32 @@ function parseTemplateTree(wxml: string, keys: KeyMapItem[]): TemplateNode | nul
   };
   const stack: TemplateNode[] = [root];
   const tokenRe = /<!--[\s\S]*?-->|<\/?[^>]+>|[^<]+/g;
-  let match: RegExpExecArray | null;
+  let match: RegExpExecArray | null = tokenRe.exec(wxml);
   let counter = 0;
 
-  while ((match = tokenRe.exec(wxml))) {
+  while (match) {
     const token = match[0];
-    if (!token || token.startsWith('<!--')) continue;
+    if (!token || token.startsWith('<!--')) {
+      match = tokenRe.exec(wxml);
+      continue;
+    }
 
     if (token.startsWith('</')) {
       if (stack.length > 1) stack.pop();
+      match = tokenRe.exec(wxml);
       continue;
     }
 
     if (token.startsWith('<')) {
       const tagMatch = token.match(/^<\s*([^\s/>]+)/);
-      if (!tagMatch) continue;
+      if (!tagMatch) {
+        match = tokenRe.exec(wxml);
+        continue;
+      }
       const tag = tagMatch[1];
+      counter += 1;
       const node: TemplateNode = {
-        id: `node-${counter += 1}`,
+        id: `node-${counter}`,
         tag,
         kind: classifyTemplateTag(tag),
         snippet: normalizeSnippet(token),
@@ -596,13 +656,18 @@ function parseTemplateTree(wxml: string, keys: KeyMapItem[]): TemplateNode | nul
       };
       stack[stack.length - 1].children.push(node);
       if (!/\/>$/.test(token) && !token.startsWith('<input')) stack.push(node);
+      match = tokenRe.exec(wxml);
       continue;
     }
 
     const text = normalizeSnippet(token, 80);
-    if (!text) continue;
+    if (!text) {
+      match = tokenRe.exec(wxml);
+      continue;
+    }
+    counter += 1;
     stack[stack.length - 1].children.push({
-      id: `node-${counter += 1}`,
+      id: `node-${counter}`,
       tag: '#text',
       kind: 'text',
       snippet: text,
@@ -611,6 +676,7 @@ function parseTemplateTree(wxml: string, keys: KeyMapItem[]): TemplateNode | nul
       text,
       children: [],
     });
+    match = tokenRe.exec(wxml);
   }
 
   return root;
@@ -686,7 +752,10 @@ export function analyzePage(targetRoot: string, jsFile: string): PageAnalysis {
 export function analyzeProject(targetRoot: string): ProjectAnalysis {
   if (!fs.existsSync(targetRoot)) throw new Error(`Target does not exist: ${targetRoot}`);
 
-  const jsFiles = walkFiles(targetRoot, (file) => file.endsWith('.js') && !file.includes(`${path.sep}common${path.sep}`));
+  const jsFiles = walkFiles(
+    targetRoot,
+    (file) => file.endsWith('.js') && !file.includes(`${path.sep}common${path.sep}`),
+  );
   const pageFiles = jsFiles.filter((file) => {
     const js = fs.readFileSync(file, 'utf8');
     return js.includes('const __returned__ =') || js.includes('function _sfc_render') || !!findTemplateFile(file);

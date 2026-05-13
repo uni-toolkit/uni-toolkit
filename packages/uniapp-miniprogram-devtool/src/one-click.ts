@@ -1,9 +1,9 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { explainAutomatorFailure, startAutomatorInspector } from './automator-inspector';
 import { analyzeProject, type ProjectAnalysis } from './core';
 import { renderHtmlReport } from './html-report';
-import { explainAutomatorFailure, startAutomatorInspector } from './automator-inspector';
 import { startWebPanel } from './web-panel';
 
 const OUTPUT_DIR = path.join(os.tmpdir(), 'uniapp-miniprogram-devtool');
@@ -50,7 +50,9 @@ function firstPositionalArg(argv: string[]): string | undefined {
 function getRequiredTarget(argv: string[]): string {
   const explicitTarget = getOptionValue(argv, '--project') || firstPositionalArg(argv);
   if (!explicitTarget) {
-    throw new Error('请显式传入 uni-app / uni-app x 微信小程序编译产物目录，例如：umpd --project ./unpackage/dist/dev/mp-weixin');
+    throw new Error(
+      '请显式传入 uni-app / uni-app x 微信小程序编译产物目录，例如：umpd --project ./unpackage/dist/dev/mp-weixin',
+    );
   }
 
   const resolved = path.resolve(explicitTarget);
@@ -63,7 +65,9 @@ function getRequiredTarget(argv: string[]): string {
 function getRequiredCliPath(argv: string[]): string {
   const rawCliPath = getOptionValue(argv, '--cli-path') || getOptionValue(argv, '--wechat-devtools');
   if (!rawCliPath) {
-    throw new Error('请显式传入微信开发者工具路径，例如：umpd --wechat-devtools /Volumes/Elements/Applications/wechatwebdevtools.app');
+    throw new Error(
+      '请显式传入微信开发者工具路径，例如：umpd --wechat-devtools /Volumes/Elements/Applications/wechatwebdevtools.app',
+    );
   }
 
   const cliPath = normalizeCliPath(rawCliPath);
@@ -172,7 +176,13 @@ export async function main(argv: string[]): Promise<void> {
         process.exitCode = 0;
       } catch (error) {
         const message = explainAutomatorFailure(error);
-        webPanel.update({ connected: false, status: message, route: '', rows: [], updatedAt: new Date().toISOString() });
+        webPanel.update({
+          connected: false,
+          status: message,
+          route: '',
+          rows: [],
+          updatedAt: new Date().toISOString(),
+        });
         console.error(message);
         process.exitCode = 1;
       } finally {
@@ -220,7 +230,7 @@ export async function main(argv: string[]): Promise<void> {
 
 if (require.main === module) {
   main(process.argv.slice(2)).catch((error) => {
-    console.error(error && error.stack ? error.stack : String(error));
+    console.error(error?.stack ? error.stack : String(error));
     process.exitCode = 1;
   });
 }

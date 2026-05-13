@@ -1,4 +1,5 @@
 import automator = require('miniprogram-automator');
+
 import type { KeyMapItem, ProjectAnalysis, TemplateNode } from './core';
 
 interface InspectorOptions {
@@ -8,9 +9,17 @@ interface InspectorOptions {
   cliPath?: string;
   port?: number;
   suppressTerminal?: boolean;
-  onSnapshot?: (snapshot: { connected: boolean; status: string; route: string; rows: RuntimeRow[]; updatedAt: string; debug?: Record<string, unknown>; rawData?: Record<string, unknown>; templateTree?: TemplateNode | null }) => void;
+  onSnapshot?: (snapshot: {
+    connected: boolean;
+    status: string;
+    route: string;
+    rows: RuntimeRow[];
+    updatedAt: string;
+    debug?: Record<string, unknown>;
+    rawData?: Record<string, unknown>;
+    templateTree?: TemplateNode | null;
+  }) => void;
 }
-
 
 export interface RuntimeRow {
   source: string;
@@ -26,7 +35,6 @@ function normalizeRoute(route: string): string {
   const withoutQuery = route.split('?')[0] || route;
   return withoutQuery.startsWith('/') ? withoutQuery.slice(1) : withoutQuery;
 }
-
 
 interface RuntimePageState {
   route: string;
@@ -114,14 +122,31 @@ export async function startAutomatorInspector(options: InspectorOptions): Promis
     try {
       const state = await withTimeout(readRuntimePageState(miniProgram), 1500, '读取当前页面数据');
       if (!state) {
-        options.onSnapshot?.({ connected: true, status: '已连接，等待当前页面加载', route: '', rows: [], updatedAt: new Date().toISOString(), debug: { keymapPages: Object.keys(options.getAnalysis().pages) }, templateTree: null });
+        options.onSnapshot?.({
+          connected: true,
+          status: '已连接，等待当前页面加载',
+          route: '',
+          rows: [],
+          updatedAt: new Date().toISOString(),
+          debug: { keymapPages: Object.keys(options.getAnalysis().pages) },
+          templateTree: null,
+        });
         return;
       }
       const route = state.route;
       const analysis = options.getAnalysis();
       const pageAnalysis = analysis.pages[route];
       if (!pageAnalysis) {
-        options.onSnapshot?.({ connected: true, status: '已连接，但当前页面没有可用映射', route, rows: [], updatedAt: new Date().toISOString(), debug: { pageId: state.pageId, rawRoute: state.rawRoute, keymapPages: Object.keys(analysis.pages) }, rawData: state.data, templateTree: null });
+        options.onSnapshot?.({
+          connected: true,
+          status: '已连接，但当前页面没有可用映射',
+          route,
+          rows: [],
+          updatedAt: new Date().toISOString(),
+          debug: { pageId: state.pageId, rawRoute: state.rawRoute, keymapPages: Object.keys(analysis.pages) },
+          rawData: state.data,
+          templateTree: null,
+        });
         const text = `当前页面：${route}\n未找到当前页面的 key 映射。`;
         if (!options.suppressTerminal && text !== lastText) {
           lastText = text;
@@ -132,7 +157,16 @@ export async function startAutomatorInspector(options: InspectorOptions): Promis
       }
 
       const rows = printableRows(pageAnalysis.keys, state.data || {});
-      options.onSnapshot?.({ connected: true, status: '已连接', route, rows, updatedAt: new Date().toISOString(), debug: { pageId: state.pageId, rawRoute: state.rawRoute, keymapPages: Object.keys(analysis.pages) }, rawData: state.data, templateTree: pageAnalysis.templateTree });
+      options.onSnapshot?.({
+        connected: true,
+        status: '已连接',
+        route,
+        rows,
+        updatedAt: new Date().toISOString(),
+        debug: { pageId: state.pageId, rawRoute: state.rawRoute, keymapPages: Object.keys(analysis.pages) },
+        rawData: state.data,
+        templateTree: pageAnalysis.templateTree,
+      });
       const text = JSON.stringify({ route, rows });
       if (!options.suppressTerminal && text !== lastText) {
         lastText = text;
@@ -143,7 +177,15 @@ export async function startAutomatorInspector(options: InspectorOptions): Promis
       }
     } catch (error) {
       const text = `读取运行时数据失败：${error instanceof Error ? error.message : String(error)}`;
-      options.onSnapshot?.({ connected: false, status: text, route: '', rows: [], updatedAt: new Date().toISOString(), debug: { error: text, keymapPages: Object.keys(options.getAnalysis().pages) }, templateTree: null });
+      options.onSnapshot?.({
+        connected: false,
+        status: text,
+        route: '',
+        rows: [],
+        updatedAt: new Date().toISOString(),
+        debug: { error: text, keymapPages: Object.keys(options.getAnalysis().pages) },
+        templateTree: null,
+      });
       if (!options.suppressTerminal && text !== lastText) {
         lastText = text;
         console.clear();
