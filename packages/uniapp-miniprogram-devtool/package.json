@@ -1,0 +1,63 @@
+{
+  "name": "uniapp-miniprogram-devtool",
+  "version": "0.0.0",
+  "description": "uni-app / uni-app x 微信小程序运行时变量映射与可视化调试工具。",
+  "type": "commonjs",
+  "main": "./dist/cli.cjs",
+  "types": "./dist/cli.d.cts",
+  "bin": {
+    "umpd": "./bin/umpd.js"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsdown --config-loader tsx",
+    "start": "pnpm dev",
+    "test": "pnpm run build && node ./test/run.js",
+    "dev": "pnpm run build && node ./dist/one-click.cjs",
+    "release": "pnpm build && rt release",
+    "changelog": "rt changelog",
+    "prepublishOnly": "pnpm test"
+  },
+  "keywords": [
+    "uni-app",
+    "uni-app-x",
+    "uni-app x",
+    "微信小程序",
+    "miniprogram",
+    "devtools",
+    "runtime-inspector",
+    "uni-app"
+  ],
+  "author": "chouchouji",
+  "license": "MIT",
+  "homepage": "https://github.com/uni-toolkit/uni-toolkit/tree/main/packages/uniapp-miniprogram-devtool",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uni-toolkit/uni-toolkit.git",
+    "directory": "packages/uniapp-miniprogram-devtool"
+  },
+  "bugs": {
+    "url": "https://github.com/uni-toolkit/uni-toolkit/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "rattail": "^2.0.8",
+    "tsdown": "catalog:",
+    "tsx": "^4.21.0",
+    "typescript": "catalog:"
+  },
+  "dependencies": {
+    "miniprogram-automator": "^0.12.1"
+  }
+}
