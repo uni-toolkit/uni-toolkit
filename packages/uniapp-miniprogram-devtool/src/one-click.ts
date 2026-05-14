@@ -7,6 +7,11 @@ import { renderHtmlReport } from './html-report';
 import { startWebPanel } from './web-panel';
 
 const OUTPUT_DIR = path.join(os.tmpdir(), 'uniapp-miniprogram-devtool');
+const PROJECT_OPTIONS = ['--project', '--proj', '-p'];
+const WECHAT_DEVTOOLS_OPTIONS = ['--wechat-devtools', '--wd', '-w'];
+const CLI_PATH_OPTIONS = ['--cli-path'];
+const PORT_OPTIONS = ['--port'];
+const VALUE_OPTIONS = new Set([...PROJECT_OPTIONS, ...WECHAT_DEVTOOLS_OPTIONS, ...CLI_PATH_OPTIONS, ...PORT_OPTIONS]);
 
 function isMpWeixinRoot(dir: string): boolean {
   return fs.existsSync(path.join(dir, 'app.json')) && fs.existsSync(path.join(dir, 'app.js'));
@@ -35,11 +40,20 @@ function getOptionValue(argv: string[], name: string): string | undefined {
   return undefined;
 }
 
+function getAnyOptionValue(argv: string[], names: string[]): string | undefined {
+  for (const name of names) {
+    const value = getOptionValue(argv, name);
+    if (value) return value;
+  }
+  return undefined;
+}
+
 function firstPositionalArg(argv: string[]): string | undefined {
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
-    if (arg === '--cli-path' || arg === '--wechat-devtools' || arg === '--project' || arg === '--port') {
-      index += 1;
+    const optionName = arg.includes('=') ? arg.slice(0, arg.indexOf('=')) : arg;
+    if (VALUE_OPTIONS.has(optionName)) {
+      if (!arg.includes('=')) index += 1;
       continue;
     }
     if (!arg.startsWith('-')) return arg;
@@ -48,10 +62,10 @@ function firstPositionalArg(argv: string[]): string | undefined {
 }
 
 function getRequiredTarget(argv: string[]): string {
-  const explicitTarget = getOptionValue(argv, '--project') || firstPositionalArg(argv);
+  const explicitTarget = getAnyOptionValue(argv, PROJECT_OPTIONS) || firstPositionalArg(argv);
   if (!explicitTarget) {
     throw new Error(
-      '请显式传入 uni-app / uni-app x 微信小程序编译产物目录，例如：umpd --project ./unpackage/dist/dev/mp-weixin',
+      '请显式传入 uni-app / uni-app x 微信小程序编译产物目录，例如：umpd -p ./unpackage/dist/dev/mp-weixin',
     );
   }
 
@@ -63,16 +77,14 @@ function getRequiredTarget(argv: string[]): string {
 }
 
 function getRequiredCliPath(argv: string[]): string {
-  const rawCliPath = getOptionValue(argv, '--cli-path') || getOptionValue(argv, '--wechat-devtools');
+  const rawCliPath = getAnyOptionValue(argv, CLI_PATH_OPTIONS) || getAnyOptionValue(argv, WECHAT_DEVTOOLS_OPTIONS);
   if (!rawCliPath) {
-    throw new Error(
-      '请显式传入微信开发者工具路径，例如：umpd --wechat-devtools /Volumes/Elements/Applications/wechatwebdevtools.app',
-    );
+    throw new Error('请显式传入微信开发者工具路径，例如：umpd -w /Volumes/Elements/Applications/wechatwebdevtools.app');
   }
 
   const cliPath = normalizeCliPath(rawCliPath);
   if (!fs.existsSync(cliPath)) {
-    throw new Error(`不是有效的微信开发者工具路径：${rawCliPath}。可以直接传 .app 路径。`);
+    throw new Error(`不是有效的微信开发者工具路径：${rawCliPath}。可以通过 -w 直接传 .app 路径。`);
   }
 
   return cliPath;
@@ -117,7 +129,7 @@ function generate(targetRoot: string): ProjectAnalysis {
   return result;
 }
 
-function printStartup(targetRoot: string, result: ProjectAnalysis, runOnce: boolean): void {
+function printStartup(targetRoot: string, result: ProjectAnalysis): void {
   const htmlPath = path.join(OUTPUT_DIR, 'uniapp-miniprogram-devtool.html');
   const pageCount = Object.keys(result.pages).length;
   const keyCount = Object.values(result.pages).reduce((sum, page) => sum + page.keys.length, 0);
@@ -128,19 +140,21 @@ function printStartup(targetRoot: string, result: ProjectAnalysis, runOnce: bool
   console.log('页面数:', pageCount, '键数量:', keyCount);
   console.log('报告文件:', htmlPath);
   console.log('');
-  if (!runOnce) console.log('正在启动并连接微信开发者工具自动化...');
+  console.log('正在启动并连接微信开发者工具自动化...');
 }
 
 export async function main(argv: string[]): Promise<void> {
-  const runOnce = argv.includes('--once');
   const cliPath = getRequiredCliPath(argv);
-  const panelPort = Number(getOptionValue(argv, '--port') || process.env.UNIAPP_MINIPROGRAM_DEVTOOL_PORT || 17890);
+  const panelPort = Number(
+    getOptionValue(argv, '--port') ||
+      process.env.UNIAPP_MINIPROGRAM_DEVTOOL_PORT ||
+      process.env.UNIAPPX_KEYMAP_PORT ||
+      17890,
+  );
   const targetRoot = getRequiredTarget(argv);
   let lastMtime = 0;
   let currentAnalysis = generate(targetRoot);
-  printStartup(targetRoot, currentAnalysis, runOnce);
-
-  if (runOnce) return;
+  printStartup(targetRoot, currentAnalysis);
 
   let pollTimer: NodeJS.Timeout | undefined;
   let stopInspector: (() => void) | undefined;

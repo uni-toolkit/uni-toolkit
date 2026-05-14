@@ -35,6 +35,12 @@ b -> count
 - 默认启动 Web Panel，展示当前页面变量值。
 - 支持过滤、手动刷新、值变化高亮、Debug 面板。
 
+## 注意事项
+
+- `manifest.json` 里需要配置合适的 `appid`，以避免微信开发者工具连接失败
+- 使用此工具前，请先推出微信开发者工具，确保它没有在后台运行
+- 需要开启微信开发者工具的服务端口，以便 `automator` 能够连接
+
 ## 安装
 
 ```bash
@@ -45,23 +51,37 @@ pnpm add -D uniapp-miniprogram-devtool
 
 ```bash
 pnpm dlx uniapp-miniprogram-devtool \
-  --project ./unpackage/dist/dev/mp-weixin \
-  --wechat-devtools /Volumes/Elements/Applications/wechatwebdevtools.app
+  ./unpackage/dist/dev/mp-weixin \
+  -w /Volumes/Elements/Applications/wechatwebdevtools.app
 ```
 
 ## 快速开始
 
-`--project` 和 `--wechat-devtools` 都是必填参数，工具不会自动扫描项目目录，也不会自动推断微信开发者工具路径。
+`mp-weixin` 产物目录和微信开发者工具路径都是必填参数。产物目录可以直接作为第一个参数传入，也可以用 `-p`；微信开发者工具路径推荐用 `-w`。
 
-- `--project`：`uni-app` / `uni-app x` 的微信小程序编译产物目录，一般是 `unpackage/dist/dev/mp-weixin`
-- `--wechat-devtools`：微信开发者工具 `.app` 路径，例如 `/Volumes/Elements/Applications/wechatwebdevtools.app`
+### 配置项
+
+| 配置 | 缩写 / 别名 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `mp-weixin` 产物目录 | 位置参数、`-p`、`--proj`、`--project` | 是 | - | `uni-app` / `uni-app x` 的微信小程序编译产物目录，一般是 `unpackage/dist/dev/mp-weixin` |
+| 微信开发者工具路径 | `-w`、`--wd`、`--wechat-devtools` | 是 | - | 微信开发者工具 `.app` 路径；工具会自动解析到 `Contents/MacOS/cli` |
+| 微信开发者工具 CLI 路径 | `--cli-path` | 否 | - | 如果已经拿到 `cli` 二进制路径，可以用它替代 `-w` |
+| Web Panel 端口 | `--port` | 否 | `17890` | 本地 Web Panel 端口；如果被占用会自动尝试后续端口 |
+| 查看帮助 | `-h`、`--help` | 否 | - | 打印命令行帮助 |
+
+### 环境变量
+
+| 环境变量 | 默认值 | 说明 |
+| --- | --- | --- |
+| `UNIAPP_MINIPROGRAM_DEVTOOL_PORT` | `17890` | 未传 `--port` 时使用的 Web Panel 端口 |
+| `UNIAPP_MINIPROGRAM_DEVTOOL_NO_OPEN` | - | 设为 `1` 时不自动打开浏览器 |
 
 启动示例：
 
 ```bash
 pnpm exec umpd \
-  --project ./unpackage/dist/dev/mp-weixin \
-  --wechat-devtools /Volumes/Elements/Applications/wechatwebdevtools.app
+  ./unpackage/dist/dev/mp-weixin \
+  -w /Volumes/Elements/Applications/wechatwebdevtools.app
 ```
 
 这里不需要你手动去找 `cli` 文件。直接传 `.app` 路径即可，工具内部会自动解析到：
@@ -74,7 +94,7 @@ pnpm exec umpd \
 
 ```bash
 pnpm exec umpd \
-  --project ./unpackage/dist/dev/mp-weixin \
+  -p ./unpackage/dist/dev/mp-weixin \
   --cli-path /Applications/wechatwebdevtools.app/Contents/MacOS/cli
 ```
 
@@ -111,9 +131,11 @@ Web Panel 当前包含：
 ## 常用参数
 
 ```bash
+umpd <mp-weixin 产物目录> -w <wechatwebdevtools.app 路径>
+umpd <mp-weixin 产物目录> -w <wechatwebdevtools.app 路径> --port 17890
+umpd -p <mp-weixin 产物目录> -w <wechatwebdevtools.app 路径>
 umpd --project <mp-weixin 产物目录> --wechat-devtools <wechatwebdevtools.app 路径>
-umpd --project <mp-weixin 产物目录> --wechat-devtools <wechatwebdevtools.app 路径> --port 17890
-umpd --project <mp-weixin 产物目录> --cli-path <微信开发者工具 cli 路径>
+umpd -p <mp-weixin 产物目录> --cli-path <微信开发者工具 cli 路径>
 ```
 
 ## 工作原理
@@ -143,7 +165,7 @@ pnpm test
 本地启动：
 
 ```bash
-pnpm dev -- --project ./unpackage/dist/dev/mp-weixin --wechat-devtools /Volumes/Elements/Applications/wechatwebdevtools.app
+pnpm dev -- ./unpackage/dist/dev/mp-weixin -w /Volumes/Elements/Applications/wechatwebdevtools.app
 ```
 
 本仓库里的可执行入口文件是：
@@ -168,4 +190,4 @@ pnpm changelog
 
 ## License
 
-MIT
+[MIT](/LICENSE)

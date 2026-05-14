@@ -98,6 +98,10 @@ tr.flash { animation: flash 1.05s ease-out; }
 .key { display:inline-grid; min-width:34px; min-height:34px; place-items:center; color:var(--paper); background:var(--ink); border-radius:12px; font-weight:900; }
 .value { font-size:18px; font-weight:800; word-break:break-word; }
 .diff { color:var(--amber); font-size:12px; margin-top:4px; }
+.unknown-group-row td { background:#f6ead2; }
+.unknown-group-toggle { display:flex; width:100%; justify-content:space-between; gap:12px; align-items:center; color:var(--ink); font-weight:900; text-decoration:none; }
+.unknown-group-toggle:hover { text-decoration:none; }
+.unknown-group-meta { color:var(--muted); font-size:12px; font-weight:800; }
 .muted { color:var(--muted); }
 .empty { padding:36px 24px; color:var(--muted); }
 .diagnostics { padding:0 24px 24px; }
@@ -158,12 +162,12 @@ pre { overflow:auto; max-height:320px; background:#1e2924; color:#f8f0dc; border
 .pages { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
 .page-pill { border:1px solid #d9caaa; border-radius:999px; padding:5px 9px; color:var(--muted); background:#fffaf0; }
 .page-pill.active { color:#fffaf0; background:var(--blue); border-color:var(--blue); }
-@media (max-width: 760px) { header, .toolbar { display:block; } .actions { justify-content:flex-start; margin-top:12px; } .toggles { padding-top:0; } .template-shell { grid-template-columns:1fr; } .meta { text-align:left; margin-top:12px; } input { width:100%; } table, thead, tbody, tr, th, td { display:block; } thead { display:none; } tr { padding:12px 0; border-bottom:1px solid var(--line); } td { border:0; padding:6px 18px; } td::before { display:block; color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.08em; } td:nth-child(1)::before { content:'变量名'; } td:nth-child(2)::before { content:'key'; } td:nth-child(3)::before { content:'值'; } td:nth-child(4)::before { content:'类型'; } }
+@media (max-width: 760px) { header, .toolbar { display:block; } .actions { justify-content:flex-start; margin-top:12px; } .toggles { padding-top:0; } .template-shell { grid-template-columns:1fr; } .meta { text-align:left; margin-top:12px; } input { width:100%; } table, thead, tbody, tr, th, td { display:block; } thead { display:none; } tr { padding:12px 0; border-bottom:1px solid var(--line); } td { border:0; padding:6px 18px; } td::before { display:block; color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.08em; } td:nth-child(1)::before { content:'变量名'; } td:nth-child(2)::before { content:'key'; } td:nth-child(3)::before { content:'值'; } td:nth-child(4)::before { content:'类型'; } .unknown-group-row td::before { content:'' !important; display:none; } }
 </style>
 </head>
 <body>
 <header>
-  <div><h1>uniappx live</h1><div class="muted">查看编译后小程序 key 对应的运行时变量值。</div></div>
+  <div><h1>uniapp-miniprogram-devtool</h1><div class="muted">查看编译后小程序 key 对应的运行时变量值。</div></div>
   <div class="meta"><div id="updated">-</div><div>每 300ms 自动刷新</div></div>
 </header>
 <main>
@@ -206,6 +210,7 @@ window.__lastDebugBodyText = '';
 window.__refreshing = false;
 window.__currentView = 'business';
 window.__showChangedOnly = false;
+window.__unknownRowsCollapsed = true;
 window.__selectedTemplateNodeId = '';
 window.__collapsedTemplateNodes = {};
 window.__templateSearch = '';
@@ -255,6 +260,9 @@ function isBusinessRow(row) {
 }
 function isDiagnosticRow(row) {
   return row.kind === 'unknown' || row.confidence === 'low' || row.confidence === 'medium';
+}
+function isUnknownUnknownRow(row) {
+  return String(row.source || '').toLowerCase() === 'unknown' && String(row.kind || '').toLowerCase() === 'unknown';
 }
 function renderToolbarState() {
   viewBusinessEl.classList.toggle('active', window.__currentView === 'business');
@@ -575,6 +583,26 @@ function renderDiagnostics(data, rows) {
     }).join('') + '</div>' +
   '</div>';
 }
+function renderRuntimeRow(data, row, now) {
+  var id = (data.route || '') + ':' + row.key;
+  var changed = window.__changedKeys[id] && now - window.__changedKeys[id].at < 1200;
+  var diff = changed ? '<div class="diff">' + escapeHtml(window.__changedKeys[id].from) + ' -> ' + escapeHtml(window.__changedKeys[id].to) + '</div>' : '';
+  return '<tr class="' + (changed ? 'flash' : '') + '"><td><strong><button class="mini-link" type="button" data-role="locate-key" data-key="' + escapeHtml(row.key) + '">' + escapeHtml(row.source) + '</button></strong><div class="muted">' + escapeHtml(row.confidence) + '</div></td><td><button class="mini-link key-link" type="button" data-role="locate-key" data-key="' + escapeHtml(row.key) + '"><span class="key">' + escapeHtml(row.key) + '</span></button></td><td class="value">' + escapeHtml(formatValue(row.value)) + diff + '</td><td>' + escapeHtml(row.kind) + '</td></tr>';
+}
+function renderUnknownGroupRow(data, rows, now) {
+  var changedCount = rows.filter(function (row) {
+    var changed = window.__changedKeys[(data.route || '') + ':' + row.key];
+    return !!(changed && now - changed.at < 1200);
+  }).length;
+  var sampleKeys = rows.slice(0, 8).map(function (row) { return row.key; }).join(', ');
+  var meta = rows.length + ' 项' + (changedCount ? ' / ' + changedCount + ' 项有变化' : '') + (sampleKeys ? ' / ' + sampleKeys : '');
+  return '<tr class="unknown-group-row">' +
+    '<td colspan="4"><button class="mini-link unknown-group-toggle" type="button" data-role="toggle-unknown-group">' +
+      '<span>' + (window.__unknownRowsCollapsed ? '+' : '-') + ' unknown 变量集合</span>' +
+      '<span class="unknown-group-meta">' + escapeHtml(meta) + '</span>' +
+    '</button></td>' +
+  '</tr>';
+}
 function render(data, force) {
   var filter = filterEl.value || '';
   var allRows = data.rows || [];
@@ -609,7 +637,8 @@ function render(data, force) {
     rows: rows,
     filter: filter,
     view: window.__currentView,
-    changedOnly: window.__showChangedOnly
+    changedOnly: window.__showChangedOnly,
+    unknownRowsCollapsed: window.__unknownRowsCollapsed
   });
   renderDiagnostics(data, allRows);
   if (!force && fingerprint === window.__lastUniappxFingerprint) return;
@@ -620,12 +649,16 @@ function render(data, force) {
     return;
   }
   contentEl.className = '';
-  contentEl.innerHTML = '<table><thead><tr><th>变量名</th><th>Key</th><th>值</th><th>类型</th></tr></thead><tbody>' + rows.map(function (row) {
-    var id = (data.route || '') + ':' + row.key;
-    var changed = window.__changedKeys[id] && now - window.__changedKeys[id].at < 1200;
-    var diff = changed ? '<div class="diff">' + escapeHtml(window.__changedKeys[id].from) + ' -> ' + escapeHtml(window.__changedKeys[id].to) + '</div>' : '';
-    return '<tr class="' + (changed ? 'flash' : '') + '"><td><strong><button class="mini-link" type="button" data-role="locate-key" data-key="' + escapeHtml(row.key) + '">' + escapeHtml(row.source) + '</button></strong><div class="muted">' + escapeHtml(row.confidence) + '</div></td><td><button class="mini-link key-link" type="button" data-role="locate-key" data-key="' + escapeHtml(row.key) + '"><span class="key">' + escapeHtml(row.key) + '</span></button></td><td class="value">' + escapeHtml(formatValue(row.value)) + diff + '</td><td>' + escapeHtml(row.kind) + '</td></tr>';
-  }).join('') + '</tbody></table>';
+  var knownRows = rows.filter(function (row) { return !isUnknownUnknownRow(row); });
+  var unknownRows = rows.filter(isUnknownUnknownRow);
+  var bodyHtml = knownRows.map(function (row) { return renderRuntimeRow(data, row, now); }).join('');
+  if (unknownRows.length) {
+    bodyHtml += renderUnknownGroupRow(data, unknownRows, now);
+    if (!window.__unknownRowsCollapsed) {
+      bodyHtml += unknownRows.map(function (row) { return renderRuntimeRow(data, row, now); }).join('');
+    }
+  }
+  contentEl.innerHTML = '<table><thead><tr><th>变量名</th><th>Key</th><th>值</th><th>类型</th></tr></thead><tbody>' + bodyHtml + '</tbody></table>';
 }
 async function refresh(force) {
   if (window.__refreshing) return;
@@ -667,6 +700,12 @@ contentEl.addEventListener('click', function (event) {
   while (target && target !== contentEl) {
     var role = target.getAttribute && target.getAttribute('data-role');
     var key = target.getAttribute && target.getAttribute('data-key');
+    if (role === 'toggle-unknown-group') {
+      window.__unknownRowsCollapsed = !window.__unknownRowsCollapsed;
+      window.__lastUniappxFingerprint = '';
+      if (window.__lastSnapshot) render(window.__lastSnapshot, true);
+      return;
+    }
     if (role === 'locate-key' && key) {
       selectTemplateNodeByKey(window.__lastSnapshot, key);
       return;
@@ -759,8 +798,12 @@ setInterval(function () { refresh(false); }, 300);
 }
 
 function openBrowser(url: string): void {
-  if (process.env.UNIAPPX_KEYMAP_NO_OPEN === '1') return;
+  if (process.env.UNIAPP_MINIPROGRAM_DEVTOOL_NO_OPEN === '1' || process.env.UNIAPPX_KEYMAP_NO_OPEN === '1') return;
   if (process.platform === 'darwin') spawn('open', [url], { detached: true, stdio: 'ignore' }).unref();
+}
+
+function defaultWebPanelPort(): number {
+  return Number(process.env.UNIAPP_MINIPROGRAM_DEVTOOL_PORT || process.env.UNIAPPX_KEYMAP_PORT || 17890);
 }
 
 async function listen(server: http.Server, preferredPort: number): Promise<number> {
@@ -808,11 +851,9 @@ async function listen(server: http.Server, preferredPort: number): Promise<numbe
   throw new Error(`未找到可用的本地 Web 面板端口，尝试范围：${preferredPort} - ${preferredPort + 19}`);
 }
 
-export async function startWebPanel(
-  options: number | WebPanelOptions = Number(process.env.UNIAPPX_KEYMAP_PORT || 17890),
-): Promise<WebPanel> {
+export async function startWebPanel(options: number | WebPanelOptions = defaultWebPanelPort()): Promise<WebPanel> {
   const normalized = typeof options === 'number' ? { port: options } : options;
-  const preferredPort = normalized.port ?? Number(process.env.UNIAPPX_KEYMAP_PORT || 17890);
+  const preferredPort = normalized.port ?? defaultWebPanelPort();
   let snapshot = { ...DEFAULT_SNAPSHOT };
   const server = http.createServer((req, res) => {
     if (req.url?.startsWith('/api/snapshot')) {

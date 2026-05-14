@@ -10,9 +10,7 @@
   },
   "files": [
     "bin",
-    "dist",
-    "README.md",
-    "LICENSE"
+    "dist"
   ],
   "scripts": {
     "build": "tsdown --config-loader tsx",
