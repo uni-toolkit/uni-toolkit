@@ -1,4 +1,4 @@
-# uniapp-miniprogram-devtool
+# @uni_toolkit/uniapp-miniprogram-devtool
 
 一个用于调试 `uni-app` / `uni-app x` 编译到微信小程序产物的运行时变量观察工具。
 
@@ -43,16 +43,17 @@ b -> count
 
 ## 安装
 
+建议全局安装，安装后会得到命令行工具 `umpd`：
+
 ```bash
-pnpm add -D uniapp-miniprogram-devtool
+npm install -g @uni_toolkit/uniapp-miniprogram-devtool
 ```
 
-或者直接临时执行：
+也可以使用其他包管理器全局安装：
 
 ```bash
-pnpm dlx uniapp-miniprogram-devtool \
-  ./unpackage/dist/dev/mp-weixin \
-  -w /Volumes/Elements/Applications/wechatwebdevtools.app
+pnpm add -g @uni_toolkit/uniapp-miniprogram-devtool
+yarn global add @uni_toolkit/uniapp-miniprogram-devtool
 ```
 
 ## 快速开始
@@ -79,9 +80,7 @@ pnpm dlx uniapp-miniprogram-devtool \
 启动示例：
 
 ```bash
-pnpm exec umpd \
-  ./unpackage/dist/dev/mp-weixin \
-  -w /Volumes/Elements/Applications/wechatwebdevtools.app
+umpd unpackage/dist/dev/mp-weixin -w /Volumes/Elements/Applications/wechatwebdevtools.app
 ```
 
 这里不需要你手动去找 `cli` 文件。直接传 `.app` 路径即可，工具内部会自动解析到：
@@ -93,9 +92,7 @@ pnpm exec umpd \
 如果你确实已经拿到了微信开发者工具的 `cli` 二进制路径，也可以显式传：
 
 ```bash
-pnpm exec umpd \
-  -p ./unpackage/dist/dev/mp-weixin \
-  --cli-path /Applications/wechatwebdevtools.app/Contents/MacOS/cli
+umpd -p ./unpackage/dist/dev/mp-weixin --cli-path /Applications/wechatwebdevtools.app/Contents/MacOS/cli
 ```
 
 ## 微信开发者工具要求
@@ -165,27 +162,13 @@ pnpm test
 本地启动：
 
 ```bash
-pnpm dev -- ./unpackage/dist/dev/mp-weixin -w /Volumes/Elements/Applications/wechatwebdevtools.app
+pnpm dev -- unpackage/dist/dev/mp-weixin -w /Volumes/Elements/Applications/wechatwebdevtools.app
 ```
 
 本仓库里的可执行入口文件是：
 
 ```txt
 bin/umpd.js
-```
-
-## 发版
-
-项目使用 `rattail` 作为发版工具。
-
-```bash
-pnpm release
-```
-
-仅生成变更日志：
-
-```bash
-pnpm changelog
 ```
 
 ## License
