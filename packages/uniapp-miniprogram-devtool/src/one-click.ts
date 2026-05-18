@@ -11,7 +11,14 @@ const PROJECT_OPTIONS = ['--project', '--proj', '-p'];
 const WECHAT_DEVTOOLS_OPTIONS = ['--wechat-devtools', '--wd', '-w'];
 const CLI_PATH_OPTIONS = ['--cli-path'];
 const PORT_OPTIONS = ['--port'];
-const VALUE_OPTIONS = new Set([...PROJECT_OPTIONS, ...WECHAT_DEVTOOLS_OPTIONS, ...CLI_PATH_OPTIONS, ...PORT_OPTIONS]);
+const AUTOMATOR_PORT_OPTIONS = ['--automator-port'];
+const VALUE_OPTIONS = new Set([
+  ...PROJECT_OPTIONS,
+  ...WECHAT_DEVTOOLS_OPTIONS,
+  ...CLI_PATH_OPTIONS,
+  ...PORT_OPTIONS,
+  ...AUTOMATOR_PORT_OPTIONS,
+]);
 
 function isMpWeixinRoot(dir: string): boolean {
   return fs.existsSync(path.join(dir, 'app.json')) && fs.existsSync(path.join(dir, 'app.js'));
@@ -151,6 +158,9 @@ export async function main(argv: string[]): Promise<void> {
       process.env.UNIAPPX_KEYMAP_PORT ||
       17890,
   );
+  const rawAutomatorPort =
+    getAnyOptionValue(argv, AUTOMATOR_PORT_OPTIONS) || process.env.UNIAPP_MINIPROGRAM_DEVTOOL_AUTOMATOR_PORT;
+  const automatorPort = rawAutomatorPort ? Number(rawAutomatorPort) : undefined;
   const targetRoot = getRequiredTarget(argv);
   let lastMtime = 0;
   let currentAnalysis = generate(targetRoot);
@@ -184,6 +194,7 @@ export async function main(argv: string[]): Promise<void> {
           getAnalysis: () => currentAnalysis,
           intervalMs: 500,
           cliPath,
+          port: automatorPort,
           suppressTerminal: true,
           onSnapshot: (snapshot) => webPanel.update(snapshot),
         });

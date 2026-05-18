@@ -68,6 +68,7 @@ yarn global add @uni_toolkit/uniapp-miniprogram-devtool
 | 微信开发者工具路径 | `-w`、`--wd`、`--wechat-devtools` | 是 | - | 微信开发者工具 `.app` 路径；工具会自动解析到 `Contents/MacOS/cli` |
 | 微信开发者工具 CLI 路径 | `--cli-path` | 否 | - | 如果已经拿到 `cli` 二进制路径，可以用它替代 `-w` |
 | Web Panel 端口 | `--port` | 否 | `17890` | 本地 Web Panel 端口；如果被占用会自动尝试后续端口 |
+| 微信开发者工具 automator 端口 | `--automator-port` | 否 | 自动选择 | 连接微信开发者工具自动化服务的端口；默认从 `9420` 开始寻找可用端口，也可以显式指定 |
 | 查看帮助 | `-h`、`--help` | 否 | - | 打印命令行帮助 |
 
 ### 环境变量
@@ -75,6 +76,7 @@ yarn global add @uni_toolkit/uniapp-miniprogram-devtool
 | 环境变量 | 默认值 | 说明 |
 | --- | --- | --- |
 | `UNIAPP_MINIPROGRAM_DEVTOOL_PORT` | `17890` | 未传 `--port` 时使用的 Web Panel 端口 |
+| `UNIAPP_MINIPROGRAM_DEVTOOL_AUTOMATOR_PORT` | - | 未传 `--automator-port` 时使用的微信开发者工具 automator 端口 |
 | `UNIAPP_MINIPROGRAM_DEVTOOL_NO_OPEN` | - | 设为 `1` 时不自动打开浏览器 |
 
 启动示例：
@@ -130,6 +132,7 @@ Web Panel 当前包含：
 ```bash
 umpd <mp-weixin 产物目录> -w <wechatwebdevtools.app 路径>
 umpd <mp-weixin 产物目录> -w <wechatwebdevtools.app 路径> --port 17890
+umpd <mp-weixin 产物目录> -w <wechatwebdevtools.app 路径> --automator-port 9421
 umpd -p <mp-weixin 产物目录> -w <wechatwebdevtools.app 路径>
 umpd --project <mp-weixin 产物目录> --wechat-devtools <wechatwebdevtools.app 路径>
 umpd -p <mp-weixin 产物目录> --cli-path <微信开发者工具 cli 路径>

@@ -470,11 +470,11 @@ export function inferFromExpression(expression: string, setupBindings: Set<strin
     }
   }
 
-  const eventMatch = expression.match(/(?:common_vendor\.)?o\s*\(\s*([A-Za-z_$][\w$]*)/);
+  const eventMatch = expression.match(/(?:\bcommon_vendor\.)?\bo\s*\(/);
   if (eventMatch) {
     return {
-      sourceName: eventMatch[1],
-      generatedName: null,
+      sourceName: inferEventSourceName(expression),
+      generatedName: 'event handler',
       kind: 'event-handler',
       confidence: 'high',
       expressionSummary: normalized,
@@ -549,6 +549,19 @@ export function inferFromExpression(expression: string, setupBindings: Set<strin
   };
 }
 
+function inferEventSourceName(expression: string): string | null {
+  const directMatch = expression.match(/(?:\bcommon_vendor\.)?\bo\s*\(\s*([A-Za-z_$][\w$]*)/);
+  if (directMatch) return directMatch[1];
+
+  const methodMatch = expression.match(/\$(?:options|setup|ctx)\.([A-Za-z_$][\w$]*)/);
+  if (methodMatch) return methodMatch[1];
+
+  const assignmentMatch = expression.match(/\$data\.([A-Za-z_$][\w$]*)\s*=/);
+  if (assignmentMatch) return `${assignmentMatch[1]} setter`;
+
+  return null;
+}
+
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
@@ -569,6 +582,37 @@ function findWxmlUsages(wxml: string, key: string): WxmlUsage[] {
     match = re.exec(wxml);
   }
   return usages;
+}
+
+function isTemplateEventAttribute(name: string): boolean {
+  const normalized = name.toLowerCase();
+  return (
+    normalized.startsWith('bind') ||
+    normalized.startsWith('catch') ||
+    normalized.startsWith('capture-bind') ||
+    normalized.startsWith('capture-catch') ||
+    normalized.startsWith('mut-bind') ||
+    normalized.startsWith('@')
+  );
+}
+
+function stripTemplateEventAttributes(wxml: string): string {
+  return wxml.replace(/<[^>]+>/g, (tag) =>
+    tag.replace(/\s+([:@A-Za-z0-9._-]+)(?:=(?:"[^"]*"|'[^']*'))?/g, (attribute, name: string) =>
+      isTemplateEventAttribute(name) ? '' : attribute,
+    ),
+  );
+}
+
+function inferEventSourceNameFromUsages(usages: WxmlUsage[], key: string): string | null {
+  const keyPattern = escapeRegExp(key);
+  for (const usage of usages) {
+    const match = usage.snippet.match(
+      new RegExp(`\\b(?:capture-)?(?:bind|catch|mut-bind)([A-Za-z0-9_-]*)\\s*=\\s*["']\\{\\{${keyPattern}\\}\\}`),
+    );
+    if (match) return match[1] ? `${match[1]} event` : 'event handler';
+  }
+  return null;
 }
 
 function extractTemplateKeyRefs(source: string, keys: string[]): string[] {
@@ -595,10 +639,12 @@ function parseTemplateAttributes(source: string): TemplateAttribute[] {
   const re = /([:@A-Za-z0-9._-]+)(?:=(?:"([^"]*)"|'([^']*)'))?/g;
   let match: RegExpExecArray | null = re.exec(attrSource);
   while (match) {
-    attrs.push({
-      name: match[1],
-      value: match[2] ?? match[3] ?? '',
-    });
+    if (!isTemplateEventAttribute(match[1])) {
+      attrs.push({
+        name: match[1],
+        value: match[2] ?? match[3] ?? '',
+      });
+    }
     match = re.exec(attrSource);
   }
   return attrs;
@@ -718,6 +764,7 @@ export function analyzePage(targetRoot: string, jsFile: string): PageAnalysis {
   const page = relJs.replace(/\.js$/, '');
   const wxmlFile = findTemplateFile(jsFile);
   const wxml = wxmlFile ? fs.readFileSync(wxmlFile, 'utf8') : '';
+  const displayWxml = stripTemplateEventAttributes(wxml);
   const sourceMap = readSourceMap(targetRoot, jsFile);
   const setupBindings = extractSetupBindings(jsNoComments);
   const body = extractReturnedObject(jsNoComments);
@@ -728,16 +775,21 @@ export function analyzePage(targetRoot: string, jsFile: string): PageAnalysis {
       const parsed = parseProperty(part);
       if (!parsed || !parsed.key) continue;
       const inferred = inferFromExpression(parsed.expression, setupBindings);
+      const wxmlUsages = findWxmlUsages(inferred.kind === 'event-handler' ? wxml : displayWxml, parsed.key);
+      const sourceName =
+        inferred.sourceName ||
+        (inferred.kind === 'event-handler' ? inferEventSourceNameFromUsages(wxmlUsages, parsed.key) : null);
       keys.push({
         key: parsed.key,
         ...inferred,
+        sourceName,
         expression: parsed.expression,
-        wxmlUsages: findWxmlUsages(wxml, parsed.key),
+        wxmlUsages,
       });
     }
   }
 
-  const templateTree = parseTemplateTree(wxml, keys);
+  const templateTree = parseTemplateTree(displayWxml, keys);
 
   return {
     page,

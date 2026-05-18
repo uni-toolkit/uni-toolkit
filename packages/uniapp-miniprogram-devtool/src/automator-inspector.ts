@@ -1,3 +1,6 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
 import automator = require('miniprogram-automator');
 
 import type { KeyMapItem, ProjectAnalysis, TemplateNode } from './core';
@@ -43,6 +46,59 @@ interface RuntimePageState {
   data: Record<string, unknown>;
 }
 
+interface AutomatorLaunchOptions {
+  projectPath: string;
+  cliPath?: string;
+  args?: string[];
+  port?: number;
+  timeout: number;
+  trustProject: boolean;
+}
+
+function launchOptions(options: InspectorOptions, cliPath?: string, args?: string[]): AutomatorLaunchOptions {
+  return {
+    projectPath: options.projectPath,
+    cliPath,
+    args,
+    ...(options.port ? { port: options.port } : {}),
+    timeout: 45_000,
+    trustProject: true,
+  };
+}
+
+function getCliJsFallback(cliPath?: string): { cliPath: string; args: string[] } | null {
+  if (!cliPath || path.basename(cliPath) !== 'cli') return null;
+
+  const macosDir = path.dirname(cliPath);
+  const appRoot = path.resolve(macosDir, '..', '..');
+  const cliJs = path.join(macosDir, 'cli.js');
+  const helperNode = path.join(
+    appRoot,
+    'Contents',
+    'Frameworks',
+    'nwjs Framework.framework',
+    'Helpers',
+    'wechatwebdevtools Helper (Renderer).app',
+    'Contents',
+    'MacOS',
+    'node',
+  );
+
+  if (!fs.existsSync(cliJs) || !fs.existsSync(helperNode)) return null;
+  return { cliPath: helperNode, args: [cliJs] };
+}
+
+async function launchAutomator(options: InspectorOptions): Promise<any> {
+  try {
+    return await automator.launch(launchOptions(options, options.cliPath));
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    const fallback = getCliJsFallback(options.cliPath);
+    if (!fallback || !message.includes('cliPath')) throw error;
+    return automator.launch(launchOptions(options, fallback.cliPath, fallback.args));
+  }
+}
+
 function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     const timer = setTimeout(() => reject(new Error(`${label} timed out after ${timeoutMs}ms`)), timeoutMs);
@@ -76,17 +132,15 @@ async function readRuntimePageState(miniProgram: any): Promise<RuntimePageState 
 }
 
 function printableRows(items: KeyMapItem[], data: Record<string, unknown>): RuntimeRow[] {
-  return items
-    .filter((item) => item.kind !== 'event-handler')
-    .map((item) => ({
-      source: item.sourceName || item.generatedName || 'unknown',
-      key: item.key,
-      value: data[item.key],
-      kind: item.kind,
-      confidence: item.confidence,
-      expressionSummary: item.expressionSummary,
-      wxmlUsages: item.wxmlUsages.map((usage) => usage.snippet),
-    }));
+  return items.map((item) => ({
+    source: item.sourceName || item.generatedName || 'unknown',
+    key: item.key,
+    value: data[item.key],
+    kind: item.kind,
+    confidence: item.confidence,
+    expressionSummary: item.expressionSummary,
+    wxmlUsages: item.wxmlUsages.map((usage) => usage.snippet),
+  }));
 }
 
 function explainAutomatorFailure(error: unknown): string {
@@ -103,13 +157,7 @@ function explainAutomatorFailure(error: unknown): string {
 }
 
 export async function startAutomatorInspector(options: InspectorOptions): Promise<() => void> {
-  const miniProgram = await automator.launch({
-    projectPath: options.projectPath,
-    cliPath: options.cliPath,
-    port: options.port || 9420,
-    timeout: 45_000,
-    trustProject: true,
-  });
+  const miniProgram = await launchAutomator(options);
 
   let closed = false;
   let lastText = '';

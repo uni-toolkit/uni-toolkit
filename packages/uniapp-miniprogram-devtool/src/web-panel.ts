@@ -99,9 +99,10 @@ tr.flash { animation: flash 1.05s ease-out; }
 .value { font-size:18px; font-weight:800; word-break:break-word; }
 .diff { color:var(--amber); font-size:12px; margin-top:4px; }
 .unknown-group-row td { background:#f6ead2; }
-.unknown-group-toggle { display:flex; width:100%; justify-content:space-between; gap:12px; align-items:center; color:var(--ink); font-weight:900; text-decoration:none; }
-.unknown-group-toggle:hover { text-decoration:none; }
-.unknown-group-meta { color:var(--muted); font-size:12px; font-weight:800; }
+.event-group-row td { background:#eaf2df; }
+.unknown-group-toggle, .event-group-toggle { display:flex; width:100%; justify-content:space-between; gap:12px; align-items:center; color:var(--ink); font-weight:900; text-decoration:none; }
+.unknown-group-toggle:hover, .event-group-toggle:hover { text-decoration:none; }
+.unknown-group-meta, .event-group-meta { color:var(--muted); font-size:12px; font-weight:800; }
 .muted { color:var(--muted); }
 .empty { padding:36px 24px; color:var(--muted); }
 .diagnostics { padding:0 24px 24px; }
@@ -211,6 +212,7 @@ window.__refreshing = false;
 window.__currentView = 'business';
 window.__showChangedOnly = false;
 window.__unknownRowsCollapsed = true;
+window.__eventRowsCollapsed = true;
 window.__selectedTemplateNodeId = '';
 window.__collapsedTemplateNodes = {};
 window.__templateSearch = '';
@@ -263,6 +265,9 @@ function isDiagnosticRow(row) {
 }
 function isUnknownUnknownRow(row) {
   return String(row.source || '').toLowerCase() === 'unknown' && String(row.kind || '').toLowerCase() === 'unknown';
+}
+function isEventRow(row) {
+  return row.kind === 'event-handler';
 }
 function renderToolbarState() {
   viewBusinessEl.classList.toggle('active', window.__currentView === 'business');
@@ -603,6 +608,20 @@ function renderUnknownGroupRow(data, rows, now) {
     '</button></td>' +
   '</tr>';
 }
+function renderEventGroupRow(data, rows, now) {
+  var changedCount = rows.filter(function (row) {
+    var changed = window.__changedKeys[(data.route || '') + ':' + row.key];
+    return !!(changed && now - changed.at < 1200);
+  }).length;
+  var sampleKeys = rows.slice(0, 8).map(function (row) { return row.key; }).join(', ');
+  var meta = rows.length + ' 项' + (changedCount ? ' / ' + changedCount + ' 项有变化' : '') + (sampleKeys ? ' / ' + sampleKeys : '');
+  return '<tr class="event-group-row">' +
+    '<td colspan="4"><button class="mini-link event-group-toggle" type="button" data-role="toggle-event-group">' +
+      '<span>' + (window.__eventRowsCollapsed ? '+' : '-') + ' 事件集合</span>' +
+      '<span class="event-group-meta">' + escapeHtml(meta) + '</span>' +
+    '</button></td>' +
+  '</tr>';
+}
 function render(data, force) {
   var filter = filterEl.value || '';
   var allRows = data.rows || [];
@@ -638,7 +657,8 @@ function render(data, force) {
     filter: filter,
     view: window.__currentView,
     changedOnly: window.__showChangedOnly,
-    unknownRowsCollapsed: window.__unknownRowsCollapsed
+    unknownRowsCollapsed: window.__unknownRowsCollapsed,
+    eventRowsCollapsed: window.__eventRowsCollapsed
   });
   renderDiagnostics(data, allRows);
   if (!force && fingerprint === window.__lastUniappxFingerprint) return;
@@ -649,9 +669,16 @@ function render(data, force) {
     return;
   }
   contentEl.className = '';
-  var knownRows = rows.filter(function (row) { return !isUnknownUnknownRow(row); });
+  var eventRows = rows.filter(isEventRow);
   var unknownRows = rows.filter(isUnknownUnknownRow);
+  var knownRows = rows.filter(function (row) { return !isEventRow(row) && !isUnknownUnknownRow(row); });
   var bodyHtml = knownRows.map(function (row) { return renderRuntimeRow(data, row, now); }).join('');
+  if (eventRows.length) {
+    bodyHtml += renderEventGroupRow(data, eventRows, now);
+    if (!window.__eventRowsCollapsed) {
+      bodyHtml += eventRows.map(function (row) { return renderRuntimeRow(data, row, now); }).join('');
+    }
+  }
   if (unknownRows.length) {
     bodyHtml += renderUnknownGroupRow(data, unknownRows, now);
     if (!window.__unknownRowsCollapsed) {
@@ -702,6 +729,12 @@ contentEl.addEventListener('click', function (event) {
     var key = target.getAttribute && target.getAttribute('data-key');
     if (role === 'toggle-unknown-group') {
       window.__unknownRowsCollapsed = !window.__unknownRowsCollapsed;
+      window.__lastUniappxFingerprint = '';
+      if (window.__lastSnapshot) render(window.__lastSnapshot, true);
+      return;
+    }
+    if (role === 'toggle-event-group') {
+      window.__eventRowsCollapsed = !window.__eventRowsCollapsed;
       window.__lastUniappxFingerprint = '';
       if (window.__lastSnapshot) render(window.__lastSnapshot, true);
       return;

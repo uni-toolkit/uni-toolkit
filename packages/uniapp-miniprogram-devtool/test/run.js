@@ -64,14 +64,15 @@ const _sfc_main = {
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return {
     a: common_assets._imports_0,
-    b: common_vendor.t($data.title)
+    b: common_vendor.t($data.title),
+    c: common_vendor.o(($event) => $data.title = $event.detail.value, "9")
   };
 }
 const MiniProgramPage = common_vendor._export_sfc(_sfc_main, [["render", _sfc_render]]);
 my.createPage(MiniProgramPage);
 //# sourceMappingURL=../../../.sourcemap/mp-weixin/pages/legacy/index.js.map
 `);
-fs.writeFileSync(path.join(legacyPageDir, 'index.wxml'), `<view><image src="{{a}}"></image><text>{{b}}</text></view>`);
+fs.writeFileSync(path.join(legacyPageDir, 'index.wxml'), `<view><image src="{{a}}"></image><input value="{{b}}" bindinput="{{c}}"/><text>{{b}}</text></view>`);
 fs.writeFileSync(path.join(legacyMapDir, 'index.js.map'), JSON.stringify({
   version: 3,
   file: 'index.js',
@@ -132,8 +133,8 @@ assert.strictEqual(page.keys.find((item) => item.key === 'a').sourceName, 'messa
 assert.strictEqual(page.keys.find((item) => item.key === 'a').confidence, 'high');
 assert.strictEqual(page.keys.find((item) => item.key === 'b').kind, 'element-id');
 assert.strictEqual(page.keys.find((item) => item.key === 'c').kind, 'css-var');
-assert.strictEqual(page.keys.find((item) => item.key === 'f').sourceName, 'handleClick');
 assert.strictEqual(page.keys.find((item) => item.key === 'f').kind, 'event-handler');
+assert.strictEqual(page.keys.find((item) => item.key === 'f').sourceName, 'handleClick');
 assert(page.keys.find((item) => item.key === 'a').wxmlUsages.length > 0, 'wxml usage should be detected');
 assert(page.templateTree, 'template tree should be generated');
 assert.strictEqual(page.templateTree.children[0].tag, 'view');
@@ -142,12 +143,19 @@ assert.strictEqual(legacyPage.wxmlFile, 'pages/legacy/index.wxml');
 assert.strictEqual(legacyPage.keys.find((item) => item.key === 'a').kind, 'static-asset');
 assert.strictEqual(legacyPage.keys.find((item) => item.key === 'b').sourceName, 'title');
 assert.strictEqual(legacyPage.keys.find((item) => item.key === 'b').confidence, 'high');
+assert.strictEqual(legacyPage.keys.find((item) => item.key === 'c').kind, 'event-handler');
+assert.strictEqual(legacyPage.keys.find((item) => item.key === 'c').sourceName, 'title setter');
+assert(legacyPage.keys.find((item) => item.key === 'c').wxmlUsages.some((usage) => usage.snippet.includes('bindinput')), 'event attrs should stay on event rows');
 assert(legacyPage.keys.find((item) => item.key === 'b').wxmlUsages.length > 0, 'legacy wxml usage should be detected');
+assert(!legacyPage.keys.find((item) => item.key === 'b').wxmlUsages.some((usage) => usage.snippet.includes('bindinput')), 'event attrs should not leak into usage snippets');
 assert(legacyPage.templateTree.children[0].children.some((node) => node.tag === 'image' && node.keyRefs.includes('a')), 'attribute binding should appear in template tree');
+assert(legacyPage.templateTree.children[0].children.some((node) => node.tag === 'input' && !node.attrs.some((attr) => attr.name === 'bindinput')), 'event attrs should be hidden from template tree');
 assert.strictEqual(directPage.keys.find((item) => item.key === 'a').sourceName, 'message');
 assert.strictEqual(directPage.keys.find((item) => item.key === 'a').confidence, 'high');
 assert.strictEqual(directPage.keys.find((item) => item.key === 'b').sourceName, 'count');
 assert.strictEqual(directPage.keys.find((item) => item.key === 'c').sourceName, 'key');
+assert.strictEqual(directPage.keys.find((item) => item.key === 'd').kind, 'event-handler');
+assert.strictEqual(directPage.keys.find((item) => item.key === 'e').kind, 'event-handler');
 assert.strictEqual(directPage.keys.find((item) => item.key === 'd').sourceName, 'handleClick');
 assert.strictEqual(directPage.keys.find((item) => item.key === 'e').sourceName, 'goDetail');
 console.log('All tests passed.');
