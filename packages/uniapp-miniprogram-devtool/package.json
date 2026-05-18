@@ -14,12 +14,8 @@
   ],
   "scripts": {
     "build": "tsdown --config-loader tsx",
-    "start": "pnpm dev",
     "test": "pnpm run build && node ./test/run.js",
-    "dev": "pnpm run build && node ./dist/one-click.cjs",
-    "release": "pnpm build && rt release",
-    "changelog": "rt changelog",
-    "prepublishOnly": "pnpm test"
+    "dev": "pnpm run build && node ./dist/one-click.cjs"
   },
   "keywords": [
     "uni-app",
@@ -31,7 +27,7 @@
     "runtime-inspector",
     "uni-app"
   ],
-  "author": "chouchouji",
+  "author": "chouchouji <1305974212@qq.com>",
   "license": "MIT",
   "homepage": "https://github.com/uni-toolkit/uni-toolkit/tree/main/packages/uniapp-miniprogram-devtool",
   "repository": {
