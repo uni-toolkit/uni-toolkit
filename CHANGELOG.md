@@ -1,3 +1,19 @@
+## [0.1.1](https://github.com/uni-toolkit/uni-toolkit/compare/v0.1.0...v0.1.1) (2026-05-18)
+
+
+### Bug Fixes
+
+* update package name to include scope for consistency ([fd03577](https://github.com/uni-toolkit/uni-toolkit/commit/fd035772242abb4a13d3894505de11246047703a))
+
+
+### Features
+
+* add automator port option and enhance event handling in web panel and CLI ([d5b0743](https://github.com/uni-toolkit/uni-toolkit/commit/d5b07439c658896cfcee57b37df2e603c0d3714d))
+* add uniapp-miniprogram-devtool ([f076d28](https://github.com/uni-toolkit/uni-toolkit/commit/f076d285cfafd3774ca60e0b283ddc17731d7bd2))
+* enhance README and CLI options, improve web panel rendering for unknown variables ([9386668](https://github.com/uni-toolkit/uni-toolkit/commit/93866681e4f899c977cfa009f98a3ded341af7ab))
+
+
+
 # [0.1.0](https://github.com/uni-toolkit/uni-toolkit/compare/v0.0.21...v0.1.0) (2026-04-30)
 
 
