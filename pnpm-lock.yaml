@@ -200,6 +200,21 @@ importers:
         specifier: 'catalog:'
         version: 5.2.8(@types/node@18.19.130)(terser@5.44.0)
 
+  packages/vite-plugin-sourcemap:
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 18.19.130
+      tsdown:
+        specifier: 'catalog:'
+        version: 0.21.8(typescript@5.3.3)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.3.3
+      vite:
+        specifier: 'catalog:'
+        version: 5.2.8(@types/node@18.19.130)(terser@5.44.0)
+
   packages/webpack-plugin-component-config:
     dependencies:
       '@dcloudio/uni-cli-shared':

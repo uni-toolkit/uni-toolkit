@@ -10,6 +10,7 @@
 | `@uni_toolkit/webpack-plugin-component-insight` | Webpack | 分析组件被哪些页面使用、使用多少次，并结合主包与分包关系在控制台输出优化建议。 | [查看文档](./packages/webpack-plugin-component-insight/README.md) |
 | `@uni_toolkit/vite-plugin-component-config` | Vite | 处理 Vue 文件中的 `<component-config>` 标签，将配置提取并合并到对应的小程序 JSON 文件中，可用于跨分包自定义组件引用和组件引用插件。 | [查看文档](./packages/vite-plugin-component-config/README.md) |
 | `@uni_toolkit/webpack-plugin-component-config` | Webpack | 处理 Vue 文件中的 `<component-config>` 标签，将配置提取并合并到对应的小程序 JSON 文件中，可用于跨分包自定义组件引用和组件引用插件。 | [查看文档](./packages/webpack-plugin-component-config/README.md) |
+| `@uni_toolkit/vite-plugin-sourcemap` | Vite | 按开发模式为 uni-app 小程序构建开启或关闭 sourcemap。 | [查看文档](./packages/vite-plugin-sourcemap/README.md) |
 | `@uni_toolkit/unplugin-compress-json` | Vite / Webpack | 压缩 JSON 文件，减小文件体积。 | [查看文档](./packages/unplugin-compress-json/README.md) |
 | `@uni_toolkit/unplugin-json-optimization` | Vite | 优化分包 JSON 文件生成，减小主包体积。 | [查看文档](./packages/unplugin-json-optimization/README.md) |
 
