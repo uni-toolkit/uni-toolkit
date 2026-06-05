@@ -1,3 +1,12 @@
+# [0.2.0](https://github.com/uni-toolkit/uni-toolkit/compare/v0.1.1...v0.2.0) (2026-06-05)
+
+
+### Features
+
+* add vite-plugin-sourcemap for controlling sourcemap generation in uni-app projects ([bc13cc8](https://github.com/uni-toolkit/uni-toolkit/commit/bc13cc88aa1008476ba219f9263144839c8d0332))
+
+
+
 ## [0.1.1](https://github.com/uni-toolkit/uni-toolkit/compare/v0.1.0...v0.1.1) (2026-05-18)
 
 
