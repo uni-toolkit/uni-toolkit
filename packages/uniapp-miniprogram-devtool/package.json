@@ -1,6 +1,6 @@
 {
   "name": "@uni_toolkit/uniapp-miniprogram-devtool",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "uni-app / uni-app x 微信小程序运行时变量映射与可视化调试工具。",
   "type": "commonjs",
   "main": "./dist/cli.cjs",
