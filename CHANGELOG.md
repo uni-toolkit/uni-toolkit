@@ -1,3 +1,17 @@
+## [0.2.2](https://github.com/uni-toolkit/uni-toolkit/compare/v0.2.1...v0.2.2) (2026-06-08)
+
+
+### Code Refactoring
+
+* replace platform check with isMiniProgram utility for sourcemap configuration ([2d55a04](https://github.com/uni-toolkit/uni-toolkit/commit/2d55a04bc6ead04157a5cf24c642162ad78543bf))
+
+
+### Features
+
+* enhance vite-plugin-sourcemap to support 'all' mode for sourcemap generation ([3b0ff10](https://github.com/uni-toolkit/uni-toolkit/commit/3b0ff10ff0ca26fa854d32f9192b8bb2545a3061))
+
+
+
 ## [0.2.1](https://github.com/uni-toolkit/uni-toolkit/compare/v0.2.0...v0.2.1) (2026-06-05)
 
 
