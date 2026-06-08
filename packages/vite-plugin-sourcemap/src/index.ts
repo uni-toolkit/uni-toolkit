@@ -2,7 +2,7 @@ import { isMiniProgram } from '@uni_toolkit/shared';
 import type { PluginOption, UserConfig } from 'vite';
 
 export interface VitePluginSourcemapOptions {
-  mode?: 'development' | 'production';
+  mode?: 'development' | 'production' | 'all';
 }
 
 export default function vitePluginSourcemap(
@@ -13,7 +13,7 @@ export default function vitePluginSourcemap(
     apply: 'build',
     config(config): UserConfig {
       if (isMiniProgram()) {
-        config.build!.sourcemap = options.mode === process.env.NODE_ENV;
+        config.build!.sourcemap = options.mode === 'all' ? true : options.mode === process.env.NODE_ENV;
       }
       return config;
     },
