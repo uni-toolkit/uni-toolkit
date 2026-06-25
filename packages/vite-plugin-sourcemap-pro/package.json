@@ -1,0 +1,54 @@
+{
+  "name": "@uni_toolkit/vite-plugin-sourcemap-pro",
+  "version": "0.2.2",
+  "license": "MIT",
+  "author": "chouchouji <1305974212@qq.com>",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "keywords": [
+    "uni-app",
+    "vue3",
+    "vite",
+    "plugin",
+    "miniprogram",
+    "weixin",
+    "alipay",
+    "sourcemap",
+    "source-map"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://github.com/uni-toolkit/uni-toolkit/tree/main/packages/vite-plugin-sourcemap-pro",
+  "bugs": "https://github.com/uni-toolkit/uni-toolkit/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/uni-toolkit/uni-toolkit.git",
+    "directory": "packages/vite-plugin-sourcemap-pro"
+  },
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch"
+  },
+  "devDependencies": {
+    "typescript": "catalog:",
+    "tsdown": "catalog:",
+    "@types/node": "catalog:",
+    "vite": "catalog:"
+  },
+  "peerDependencies": {
+    "vite": "^5.0.0"
+  }
+}
