@@ -1,3 +1,12 @@
+# [0.3.0](https://github.com/uni-toolkit/uni-toolkit/compare/v0.2.2...v0.3.0) (2026-06-25)
+
+
+### Features
+
+* add vite-plugin-sourcemap-pro for disabling sourcemaps in Vite/uni-app projects ([42a45d1](https://github.com/uni-toolkit/uni-toolkit/commit/42a45d1585c7208d45584c55f431eff81c735bc3))
+
+
+
 ## [0.2.2](https://github.com/uni-toolkit/uni-toolkit/compare/v0.2.1...v0.2.2) (2026-06-08)
 
 
