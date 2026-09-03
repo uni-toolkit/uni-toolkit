@@ -1,6 +1,6 @@
 {
   "name": "@uni_toolkit/vite-plugin-sourcemap-pro",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "license": "MIT",
   "author": "chouchouji <1305974212@qq.com>",
   "type": "module",

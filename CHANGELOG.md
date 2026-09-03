@@ -1,3 +1,12 @@
+## [0.3.1](https://github.com/uni-toolkit/uni-toolkit/compare/v0.3.0...v0.3.1) (2026-09-03)
+
+
+### Features
+
+* add replaceSameKey option for shallow merge in component config plugins ([7858c04](https://github.com/uni-toolkit/uni-toolkit/commit/7858c04a6b878320d0764aa82e0f763090f3cb47))
+
+
+
 # [0.3.0](https://github.com/uni-toolkit/uni-toolkit/compare/v0.2.2...v0.3.0) (2026-06-25)
 
 
