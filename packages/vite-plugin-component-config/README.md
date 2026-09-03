@@ -101,8 +101,12 @@ export default {
 interface ComponentConfigPluginOptions {
   include?: FilterPattern;  // 包含的文件模式，默认: ["**/*.{vue,nvue,uvue}"]
   exclude?: FilterPattern;  // 排除的文件模式，默认: []
+  replaceSameKey?: boolean; // 开启后同名 key 直接用 component-config 覆盖 JSON，默认: false
 }
 ```
+
+> `replaceSameKey` 开启后，最终写回时使用浅合并策略：`{ ...json, ...config }`。
+> 适合 `usingComponents`、数组、空对象这类同名字段需要整体替换的场景。
 
 ## 注意事项
 

@@ -10,15 +10,18 @@ import type { Compiler, Module } from 'webpack';
 export interface ComponentConfigPluginOptions {
   include?: FilterPattern;
   exclude?: FilterPattern;
+  replaceSameKey?: boolean;
 }
 
 export class WebpackComponentConfigPlugin {
   private map: Map<string, Record<string, unknown>> = new Map();
   private filter: (id: string) => boolean;
   private set: Set<string> = new Set();
+  private replaceSameKey: boolean;
 
   constructor(options: ComponentConfigPluginOptions = {}) {
     this.filter = createFilter(options.include || ['**/*.{vue,nvue}'], options.exclude);
+    this.replaceSameKey = !!options.replaceSameKey;
   }
 
   apply(compiler: Compiler) {
@@ -87,7 +90,8 @@ export class WebpackComponentConfigPlugin {
       try {
         const content = fs.readFileSync(outputPath, 'utf-8');
         const json = JSON.parse(content);
-        fs.writeFileSync(outputPath, JSON.stringify(merge(json, config), null, 2));
+        const result = this.replaceSameKey ? { ...json, ...config } : merge(json, config);
+        fs.writeFileSync(outputPath, JSON.stringify(result, null, 2));
       } catch (error) {
         console.warn(`Failed to process ${outputPath}:`, error);
       }

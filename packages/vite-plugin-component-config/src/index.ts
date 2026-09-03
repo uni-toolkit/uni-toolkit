@@ -8,6 +8,7 @@ import { createFilter, type FilterPattern, type PluginOption } from 'vite';
 export interface ComponentConfigPluginOptions {
   include?: FilterPattern;
   exclude?: FilterPattern;
+  replaceSameKey?: boolean;
 }
 
 export default function vitePluginComponentConfig(
@@ -17,6 +18,7 @@ export default function vitePluginComponentConfig(
   },
 ): PluginOption {
   const map: Map<string, Record<string, any>> = new Map();
+  const replaceSameKey = !!options.replaceSameKey;
   return {
     name: 'vite-plugin-component-config',
     enforce: 'pre',
@@ -50,7 +52,8 @@ export default function vitePluginComponentConfig(
         }
         const content = fs.readFileSync(outputPath, 'utf-8');
         const json = JSON.parse(content);
-        fs.writeFileSync(outputPath, JSON.stringify(merge(json, config), null, 2));
+        const result = replaceSameKey ? { ...json, ...config } : merge(json, config);
+        fs.writeFileSync(outputPath, JSON.stringify(result, null, 2));
       }
     },
   };
