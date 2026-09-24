@@ -2,17 +2,13 @@
 
 一个用于 UniApp 项目的 Webpack 插件，用于处理 Vue 文件中的 `<component-config>` 标签，将配置提取并合并到对应的 `小程序 JSON 文件` 中。
 
-> [!WARNING]
-> **Node.js** >= 20.19.0
-
-> [!TIP]
-> **HBuilder X 项目** 推荐使用 `v0.0.14`
 
 ## 功能特性
 
 - 🎯 **配置提取**：从 Vue 文件的 `<component-config>` 标签中提取 JSON 配置
 - 🔄 **自动合并**：将提取的配置自动合并到对应的 JSON 文件中
 - 🎨 **文件过滤**：支持自定义文件匹配规则
+- 🔀 **平台配置**：支持通过 `mp-*` 键声明特定小程序平台的配置
 - 🚀 **小程序优化**：专为小程序环境设计，只在小程序平台下生效
 - 📦 **零侵入**：不修改原始 Vue 文件，保持代码完整性
 
@@ -44,6 +40,8 @@ module.exports = {
 
 ### 修改 Vue 文件
 
+`<component-config>` 内容使用原生 `JSON.parse` 解析，必须是严格 JSON；条件编译应写在标签外层。
+
 ```vue
 // custom-component.vue
 <template>
@@ -65,19 +63,31 @@ export default {
 
 // #ifdef MP
 <component-config>
-// 此处必须是标准的 json 对象，支持条件编译
 {
   "usingComponents": {
     "custom-button": "/components/custom-button"
   },
   "styleIsolation": "apply-shared",
-  "componentPlaceholder": {  
-    "test": "view",  
-  }  
+  "componentPlaceholder": {
+    "test": "view"
+  }
 }
 </component-config>
 // #endif
 ```
+
+也可以在顶层使用平台键声明平台专属配置，平台配置会合并到通用配置中，其他平台配置不会写入产物：
+
+```json
+{
+  "component": true,
+  "mp-weixin": {
+    "styleIsolation": "apply-shared"
+  }
+}
+```
+
+编译到 `mp-weixin` 时会得到 `component` 和 `styleIsolation`，编译到 `mp-alipay` 时只会得到 `component`。
 
 编译到小程序端生成的 `JSON 文件` 如下所示
 
@@ -112,7 +122,7 @@ interface ComponentConfigPluginOptions {
 ## 注意事项
 
 1. **平台限制**：插件只在小程序环境下生效
-2. **JSON 格式**：`<component-config>` 标签内的内容必须是有效的 JSON 格式
+2. **JSON 格式**：`<component-config>` 标签内必须是严格 JSON，不支持注释、尾逗号、单引号等 JavaScript 扩展语法
 
 ## 许可证
 

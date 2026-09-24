@@ -1,7 +1,5 @@
 import fs from 'node:fs';
-import path from 'node:path';
-import { parseJson } from '@dcloudio/uni-cli-shared';
-import { getOutputJsonPath, isMiniProgram } from '@uni_toolkit/shared';
+import { getOutputJsonPath, isMiniProgram, resolvePlatformConfig } from '@uni_toolkit/shared';
 import { merge } from 'rattail';
 import { createFilter, type FilterPattern, type PluginOption } from 'vite';
 
@@ -36,7 +34,7 @@ export default function vitePluginComponentConfig(
 
       matches.forEach((match) => {
         const content = match.replace(/<component-config>|<\/component-config>/g, '');
-        const componentConfig = parseJson(content.toString(), true, path.basename(id));
+        const componentConfig = resolvePlatformConfig(JSON.parse(content));
         map.set(getOutputJsonPath(id), componentConfig);
       });
 

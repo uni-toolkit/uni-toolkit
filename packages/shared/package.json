@@ -24,6 +24,9 @@
     "build": "tsdown",
     "dev": "tsdown --watch"
   },
+  "dependencies": {
+    "rattail": "catalog:"
+  },
   "devDependencies": {
     "typescript": "catalog:",
     "tsdown": "catalog:",

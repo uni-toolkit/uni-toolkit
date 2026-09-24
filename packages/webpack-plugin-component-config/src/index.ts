@@ -1,9 +1,6 @@
-import { createFilter, type FilterPattern } from '@rollup/pluginutils';
-import { getOutputJsonPath, isMiniProgram, parseVueRequest } from '@uni_toolkit/shared';
-
-const { parseJson } = require('@dcloudio/uni-cli-shared');
-
 import fs from 'node:fs';
+import { createFilter, type FilterPattern } from '@rollup/pluginutils';
+import { getOutputJsonPath, isMiniProgram, parseVueRequest, resolvePlatformConfig } from '@uni_toolkit/shared';
 import { merge } from 'rattail';
 import type { Compiler, Module } from 'webpack';
 
@@ -66,7 +63,7 @@ export class WebpackComponentConfigPlugin {
       matches.forEach((match) => {
         const configContent = match.replace(/<component-config>|<\/component-config>/g, '');
         try {
-          const componentConfig = parseJson(configContent.toString(), true);
+          const componentConfig = resolvePlatformConfig(JSON.parse(configContent));
 
           const outputPath = getOutputJsonPath(resource);
           this.map.set(outputPath, componentConfig);

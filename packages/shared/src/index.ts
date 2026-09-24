@@ -1,5 +1,7 @@
 import path from 'node:path';
 
+export { resolvePlatformConfig } from './platform';
+
 export function getOutputJsonPath(filePath: string) {
   const relativePath = path.relative(process.env.UNI_INPUT_DIR!, filePath);
   const { name, dir } = path.parse(relativePath);
