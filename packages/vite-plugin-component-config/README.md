@@ -2,6 +2,9 @@
 
 一个用于 UniApp 项目的 Vite 插件，用于处理 Vue 文件中的 `<component-config>` 标签，将配置提取并合并到对应的 `小程序 JSON 文件` 中。
 
+> [!IMPORTANT]
+> 从 `0.4.0` 起，`<component-config>` 不再支持条件编译。需要区分平台时，请使用顶层 `mp-*` 平台配置。
+
 > [!TIP]
 > **Node.js** >= 20.19.0
 
@@ -44,7 +47,7 @@ export default defineConfig({
 
 ### 修改 Vue 文件
 
-`<component-config>` 内容使用原生 `JSON.parse` 解析，必须是严格 JSON；条件编译应写在标签外层。
+`<component-config>` 内容使用原生 `JSON.parse` 解析，必须是严格 JSON。
 
 ```vue
 // custom-component.vue
@@ -80,18 +83,17 @@ export default {
 // #endif
 ```
 
-也可以在顶层使用平台键声明平台专属配置，平台配置会合并到通用配置中，其他平台配置不会写入产物：
+需要区分平台时，请在顶层使用平台键声明专属配置；当前平台配置会合并到通用配置中，其他平台配置不会写入产物：
 
 ```json
 {
-  "component": true,
-  "mp-weixin": {
-    "styleIsolation": "apply-shared"
-  }
+  "x": 1,
+  "mp-weixin": { "y": 2 },
+  "mp-alipay": { "z": 3 }
 }
 ```
 
-编译到 `mp-weixin` 时会得到 `component` 和 `styleIsolation`，编译到 `mp-alipay` 时只会得到 `component`。
+编译到 `mp-weixin` 时得到 `{ "x": 1, "y": 2 }`，编译到 `mp-alipay` 时得到 `{ "x": 1, "z": 3 }`，其他小程序平台只得到 `{ "x": 1 }`。
 
 编译到小程序端生成的 `JSON 文件` 如下所示
 
