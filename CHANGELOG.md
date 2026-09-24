@@ -1,3 +1,12 @@
+# [0.4.0](https://github.com/uni-toolkit/uni-toolkit/compare/v0.3.1...v0.4.0) (2026-09-24)
+
+
+### Features
+
+* support platform-specific component config ([e8f76dc](https://github.com/uni-toolkit/uni-toolkit/commit/e8f76dc65f79374ae81cebea448a99342d01d5fc))
+
+
+
 ## [0.3.1](https://github.com/uni-toolkit/uni-toolkit/compare/v0.3.0...v0.3.1) (2026-09-03)
 
 
