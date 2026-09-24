@@ -3,7 +3,7 @@
 一个用于 UniApp 项目的 Webpack 插件，用于处理 Vue 文件中的 `<component-config>` 标签，将配置提取并合并到对应的 `小程序 JSON 文件` 中。
 
 > [!IMPORTANT]
-> 从 `0.4.0` 起，`<component-config>` 不再支持条件编译。需要区分平台时，请使用顶层 `mp-*` 平台配置。
+> 从 `0.4.0` 起，`<component-config>` 的 JSON 内容不再支持条件编译。整个 `<component-config>` 仍可在外层使用 `#ifdef MP` 包裹；需要区分具体小程序平台时，请使用顶层 `mp-*` 配置。
 
 ## 功能特性
 
@@ -42,7 +42,7 @@ module.exports = {
 
 ### 修改 Vue 文件
 
-`<component-config>` 内容使用原生 `JSON.parse` 解析，必须是严格 JSON。
+`<component-config>` 内容使用原生 `JSON.parse` 解析，必须是严格 JSON，内部不能包含条件编译指令。可以像下面这样在整个标签外层使用 `#ifdef MP`。
 
 ```vue
 // custom-component.vue
@@ -66,9 +66,6 @@ export default {
 // #ifdef MP
 <component-config>
 {
-  "usingComponents": {
-    "custom-button": "/components/custom-button"
-  },
   "styleIsolation": "apply-shared",
   "componentPlaceholder": {
     "test": "view"
@@ -96,8 +93,7 @@ export default {
 {
   "component": true,
   "usingComponents": {
-    "test": "../sub1/test",
-    "custom-button": "/components/custom-button"
+    "test": "../sub1/test"
   },
   "styleIsolation": "apply-shared",
   "componentPlaceholder": {
