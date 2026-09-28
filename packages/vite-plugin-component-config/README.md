@@ -5,9 +5,6 @@
 > [!IMPORTANT]
 > 从 `0.4.0` 起，`<component-config>` 的 JSON 内容不再支持条件编译。整个 `<component-config>` 仍可在外层使用 `#ifdef MP` 包裹；需要区分具体小程序平台时，请使用顶层 `mp-*` 配置。
 
-> [!TIP]
-> **Node.js** >= 20.19.0
-
 ## 功能特性
 
 - 🎯 **配置提取**：从 Vue 文件的 `<component-config>` 标签中提取 JSON 配置
