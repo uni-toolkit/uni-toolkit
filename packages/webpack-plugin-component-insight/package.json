@@ -55,8 +55,5 @@
   },
   "peerDependencies": {
     "webpack": "^5.0.0"
-  },
-  "engines": {
-    "node": ">=20.19.0"
   }
 }
