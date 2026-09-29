@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import automator = require('miniprogram-automator');
+import automator from 'miniprogram-automator';
 
 import type { KeyMapItem, ProjectAnalysis, TemplateNode } from './core';
 
@@ -116,18 +116,22 @@ function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string): 
 }
 
 async function readRuntimePageState(miniProgram: any): Promise<RuntimePageState | null> {
-  // Use the underlying automator protocol directly instead of cached Page objects.
-  // This tracks refresh/navigation better because App.getCurrentPage returns the latest pageId/path.
-  const current = await miniProgram.send('App.getCurrentPage');
-  if (!current || current.pageId == null) return null;
+  // Page.getData hangs on the current DevTools version, so read getCurrentPages() directly
+  // in the miniprogram logic layer via evaluate instead.
+  const state: { route: string; data: MiniProgramPageInstance['data'] } | null = await miniProgram.evaluate(() => {
+    const pages = getCurrentPages();
+    const top = pages[pages.length - 1];
+    if (!top) return null;
+    return { route: top.route || '', data: top.data || {} };
+  });
+  if (!state) return null;
 
-  const dataResult = await miniProgram.send('Page.getData', { pageId: current.pageId });
-  const rawRoute = String(current.path || '');
+  const rawRoute = String(state.route || '');
   return {
     route: normalizeRoute(rawRoute),
     rawRoute,
-    pageId: current.pageId,
-    data: (dataResult?.data || {}) as Record<string, unknown>,
+    pageId: state.data.__webviewId__ ?? '',
+    data: state.data || {},
   };
 }
 
@@ -191,7 +195,11 @@ export async function startAutomatorInspector(options: InspectorOptions): Promis
           route,
           rows: [],
           updatedAt: new Date().toISOString(),
-          debug: { pageId: state.pageId, rawRoute: state.rawRoute, keymapPages: Object.keys(analysis.pages) },
+          debug: {
+            pageId: state.pageId,
+            rawRoute: state.rawRoute,
+            keymapPages: Object.keys(analysis.pages),
+          },
           rawData: state.data,
           templateTree: null,
         });
@@ -211,7 +219,11 @@ export async function startAutomatorInspector(options: InspectorOptions): Promis
         route,
         rows,
         updatedAt: new Date().toISOString(),
-        debug: { pageId: state.pageId, rawRoute: state.rawRoute, keymapPages: Object.keys(analysis.pages) },
+        debug: {
+          pageId: state.pageId,
+          rawRoute: state.rawRoute,
+          keymapPages: Object.keys(analysis.pages),
+        },
         rawData: state.data,
         templateTree: pageAnalysis.templateTree,
       });
@@ -231,7 +243,10 @@ export async function startAutomatorInspector(options: InspectorOptions): Promis
         route: '',
         rows: [],
         updatedAt: new Date().toISOString(),
-        debug: { error: text, keymapPages: Object.keys(options.getAnalysis().pages) },
+        debug: {
+          error: text,
+          keymapPages: Object.keys(options.getAnalysis().pages),
+        },
         templateTree: null,
       });
       if (!options.suppressTerminal && text !== lastText) {

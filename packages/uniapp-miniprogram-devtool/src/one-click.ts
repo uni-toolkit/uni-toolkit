@@ -140,7 +140,6 @@ function printStartup(targetRoot: string, result: ProjectAnalysis): void {
   const htmlPath = path.join(OUTPUT_DIR, 'uniapp-miniprogram-devtool.html');
   const pageCount = Object.keys(result.pages).length;
   const keyCount = Object.values(result.pages).reduce((sum, page) => sum + page.keys.length, 0);
-
   console.clear();
   console.log('uniapp-miniprogram-devtool');
   console.log('目标目录:', targetRoot);
@@ -172,7 +171,13 @@ export async function main(argv: string[]): Promise<void> {
   let shuttingDown = false;
 
   function updatePanelStatus(status: string): void {
-    webPanel.update({ connected: false, status, route: '', rows: [], updatedAt: new Date().toISOString() });
+    webPanel.update({
+      connected: false,
+      status,
+      route: '',
+      rows: [],
+      updatedAt: new Date().toISOString(),
+    });
   }
 
   function disposeInspector(): void {
