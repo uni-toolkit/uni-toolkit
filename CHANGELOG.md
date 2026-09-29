@@ -1,3 +1,12 @@
+## [0.4.1](https://github.com/uni-toolkit/uni-toolkit/compare/v0.4.0...v0.4.1) (2026-09-28)
+
+
+### Bug Fixes
+
+* remove plugin node engine constraints ([0d92505](https://github.com/uni-toolkit/uni-toolkit/commit/0d925057e265922d6b86ea8b0b15086b8fc9aeed))
+
+
+
 # [0.4.0](https://github.com/uni-toolkit/uni-toolkit/compare/v0.3.1...v0.4.0) (2026-09-24)
 
 
