@@ -1,3 +1,12 @@
+## [0.4.2](https://github.com/uni-toolkit/uni-toolkit/compare/v0.4.1...v0.4.2) (2026-09-29)
+
+
+### Bug Fixes
+
+* **uniapp-miniprogram-devtool:** read page data via evaluate instead of hanging Page.getData ([#21](https://github.com/uni-toolkit/uni-toolkit/issues/21)) ([196eb5f](https://github.com/uni-toolkit/uni-toolkit/commit/196eb5fde170b0e70403a5ea5470b837834cd5b0))
+
+
+
 ## [0.4.1](https://github.com/uni-toolkit/uni-toolkit/compare/v0.4.0...v0.4.1) (2026-09-28)
 
 
