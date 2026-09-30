@@ -5,9 +5,9 @@ function printHelp(): void {
 
 用法:
   umpd [--port <port>] [--automator-port <port>]
-  umpd <mp-weixin> -w <wechatwebdevtools.app> [--port <port>] [--automator-port <port>]
-  umpd -p <mp-weixin> -w <wechatwebdevtools.app> [--port <port>] [--automator-port <port>]
-  umpd --project <mp-weixin> --wechat-devtools <wechatwebdevtools.app> [--port <port>] [--automator-port <port>]
+  umpd <mp-weixin> [-w <wechatwebdevtools 路径>] [--port <port>] [--automator-port <port>]
+  umpd -p <mp-weixin> [-w <wechatwebdevtools 路径>] [--port <port>] [--automator-port <port>]
+  umpd --project <mp-weixin> [--wechat-devtools <wechatwebdevtools 路径>] [--port <port>] [--automator-port <port>]
 
 说明:
   默认启动 Web Panel，并通过微信开发者工具 automator 读取当前小程序运行时 page.data。
@@ -21,6 +21,7 @@ function printHelp(): void {
 
 示例:
   umpd
+  umpd ./dist/dev/mp-weixin
   umpd ./unpackage/dist/dev/mp-weixin -w /Volumes/Elements/Applications/wechatwebdevtools.app
   umpd -p ./unpackage/dist/dev/mp-weixin -w /Volumes/Elements/Applications/wechatwebdevtools.app --automator-port 9421
   umpd --project ./unpackage/dist/dev/mp-weixin --cli-path /Applications/wechatwebdevtools.app/Contents/MacOS/cli
