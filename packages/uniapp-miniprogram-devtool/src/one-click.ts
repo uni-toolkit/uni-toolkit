@@ -35,6 +35,9 @@ function safeStat(file: string): fs.Stats | null {
 function normalizeCliPath(value: string): string {
   const resolved = path.resolve(value);
   if (resolved.endsWith('.app')) return path.join(resolved, 'Contents', 'MacOS', 'cli');
+  if (process.platform === 'win32' && safeStat(resolved)?.isDirectory()) {
+    return path.join(resolved, 'cli.bat');
+  }
   return resolved;
 }
 
@@ -68,11 +71,24 @@ function firstPositionalArg(argv: string[]): string | undefined {
   return undefined;
 }
 
+function detectTargetFromCwd(): string | undefined {
+  const candidates = [
+    path.resolve(process.cwd(), 'unpackage/dist/dev/mp-weixin'),
+    path.resolve(process.cwd(), 'dist/dev/mp-weixin'),
+  ];
+  return candidates.find((candidate) => isMpWeixinRoot(candidate));
+}
+
 function getRequiredTarget(argv: string[]): string {
   const explicitTarget = getAnyOptionValue(argv, PROJECT_OPTIONS) || firstPositionalArg(argv);
   if (!explicitTarget) {
+    const detected = detectTargetFromCwd();
+    if (detected) {
+      console.log('未传入产物目录，使用自动探测结果:', detected);
+      return detected;
+    }
     throw new Error(
-      '请显式传入 uni-app / uni-app x 微信小程序编译产物目录，例如：umpd -p ./unpackage/dist/dev/mp-weixin',
+      '未找到 uni-app / uni-app x 微信小程序编译产物目录。请在项目根目录运行（会自动探测 ./unpackage/dist/dev/mp-weixin 和 ./dist/dev/mp-weixin），或显式传入，例如：umpd -p ./unpackage/dist/dev/mp-weixin',
     );
   }
 
@@ -83,15 +99,46 @@ function getRequiredTarget(argv: string[]): string {
   return resolved;
 }
 
+function resolveDefaultCliPath(): string | undefined {
+  const candidates =
+    process.platform === 'win32'
+      ? ['C:/Program Files (x86)/Tencent/微信web开发者工具/cli.bat']
+      : process.platform === 'darwin'
+        ? ['/Applications/wechatwebdevtools.app/Contents/MacOS/cli']
+        : [];
+  return candidates.find((candidate) => fs.existsSync(candidate));
+}
+
+function cliPathGuidance(): string {
+  if (process.platform === 'win32') {
+    return '请显式传入安装目录或 cli 路径，例如：umpd -w "C:/Program Files (x86)/Tencent/微信web开发者工具" 或 umpd --cli-path "C:/Program Files (x86)/Tencent/微信web开发者工具/cli.bat"';
+  }
+  if (process.platform === 'darwin') {
+    return '请显式传入路径，例如：umpd -w /Applications/wechatwebdevtools.app';
+  }
+  return '当前平台不支持自动探测默认安装路径，请用 --cli-path 显式传入微信开发者工具 cli 路径，例如：umpd --cli-path <微信开发者工具 cli 路径>';
+}
+
 function getRequiredCliPath(argv: string[]): string {
   const rawCliPath = getAnyOptionValue(argv, CLI_PATH_OPTIONS) || getAnyOptionValue(argv, WECHAT_DEVTOOLS_OPTIONS);
   if (!rawCliPath) {
-    throw new Error('请显式传入微信开发者工具路径，例如：umpd -w /Volumes/Elements/Applications/wechatwebdevtools.app');
+    const detected = resolveDefaultCliPath();
+    if (detected) {
+      console.log('未传入微信开发者工具路径，使用默认安装路径:', detected);
+      return detected;
+    }
+    throw new Error(`未在默认安装路径找到微信开发者工具。${cliPathGuidance()}`);
   }
 
   const cliPath = normalizeCliPath(rawCliPath);
   if (!fs.existsSync(cliPath)) {
-    throw new Error(`不是有效的微信开发者工具路径：${rawCliPath}。可以通过 -w 直接传 .app 路径。`);
+    const hint =
+      process.platform === 'win32'
+        ? '可以通过 -w 直接传安装目录（会自动解析到 cli.bat），或用 --cli-path 显式传 cli.bat 路径。'
+        : process.platform === 'darwin'
+          ? '可以通过 -w 直接传 .app 路径。'
+          : '请用 --cli-path 显式传微信开发者工具 cli 路径。';
+    throw new Error(`不是有效的微信开发者工具路径：${rawCliPath}。${hint}`);
   }
 
   return cliPath;
