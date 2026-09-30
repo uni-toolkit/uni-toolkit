@@ -68,11 +68,24 @@ function firstPositionalArg(argv: string[]): string | undefined {
   return undefined;
 }
 
+function detectTargetFromCwd(): string | undefined {
+  const candidates = [
+    path.resolve(process.cwd(), 'unpackage/dist/dev/mp-weixin'),
+    path.resolve(process.cwd(), 'dist/dev/mp-weixin'),
+  ];
+  return candidates.find((candidate) => isMpWeixinRoot(candidate));
+}
+
 function getRequiredTarget(argv: string[]): string {
   const explicitTarget = getAnyOptionValue(argv, PROJECT_OPTIONS) || firstPositionalArg(argv);
   if (!explicitTarget) {
+    const detected = detectTargetFromCwd();
+    if (detected) {
+      console.log('未传入产物目录，使用自动探测结果:', detected);
+      return detected;
+    }
     throw new Error(
-      '请显式传入 uni-app / uni-app x 微信小程序编译产物目录，例如：umpd -p ./unpackage/dist/dev/mp-weixin',
+      '未找到 uni-app / uni-app x 微信小程序编译产物目录。请在项目根目录运行（会自动探测 ./unpackage/dist/dev/mp-weixin 和 ./dist/dev/mp-weixin），或显式传入，例如：umpd -p ./unpackage/dist/dev/mp-weixin',
     );
   }
 
@@ -83,10 +96,25 @@ function getRequiredTarget(argv: string[]): string {
   return resolved;
 }
 
+function resolveDefaultCliPath(): string | undefined {
+  const candidates =
+    process.platform === 'win32'
+      ? ['C:/Program Files (x86)/Tencent/微信web开发者工具/cli.bat']
+      : ['/Applications/wechatwebdevtools.app/Contents/MacOS/cli'];
+  return candidates.find((candidate) => fs.existsSync(candidate));
+}
+
 function getRequiredCliPath(argv: string[]): string {
   const rawCliPath = getAnyOptionValue(argv, CLI_PATH_OPTIONS) || getAnyOptionValue(argv, WECHAT_DEVTOOLS_OPTIONS);
   if (!rawCliPath) {
-    throw new Error('请显式传入微信开发者工具路径，例如：umpd -w /Volumes/Elements/Applications/wechatwebdevtools.app');
+    const detected = resolveDefaultCliPath();
+    if (detected) {
+      console.log('未传入微信开发者工具路径，使用默认安装路径:', detected);
+      return detected;
+    }
+    throw new Error(
+      '未在默认安装路径找到微信开发者工具。请显式传入路径，例如：umpd -w /Applications/wechatwebdevtools.app',
+    );
   }
 
   const cliPath = normalizeCliPath(rawCliPath);

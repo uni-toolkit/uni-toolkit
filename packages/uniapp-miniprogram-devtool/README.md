@@ -58,14 +58,20 @@ yarn global add @uni_toolkit/uniapp-miniprogram-devtool
 
 ## 快速开始
 
-`mp-weixin` 产物目录和微信开发者工具路径都是必填参数。产物目录可以直接作为第一个参数传入，也可以用 `-p`；微信开发者工具路径推荐用 `-w`。
+在 uni-app / uni-app x 项目根目录下直接运行即可，零参数：
+
+```bash
+umpd
+```
+
+不传参数时会自动探测当前目录下的 `./unpackage/dist/dev/mp-weixin` 和 `./dist/dev/mp-weixin`（前者为 HBuilderX 创建的 uni-app / uni-app x 项目输出，后者常见于 CLI（Vite）项目或自定义 outDir 的项目），并按平台查找微信开发者工具的默认安装路径（macOS：`/Applications/wechatwebdevtools.app`，Windows：`C:/Program Files (x86)/Tencent/微信web开发者工具`）。产物目录也可以直接作为第一个参数传入或用 `-p` 指定；开发者工具装在非默认位置时用 `-w` 指定。
 
 ### 配置项
 
 | 配置 | 缩写 / 别名 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `mp-weixin` 产物目录 | 位置参数、`-p`、`--proj`、`--project` | 是 | - | `uni-app` / `uni-app x` 的微信小程序编译产物目录，一般是 `unpackage/dist/dev/mp-weixin` |
-| 微信开发者工具路径 | `-w`、`--wd`、`--wechat-devtools` | 是 | - | 微信开发者工具 `.app` 路径；工具会自动解析到 `Contents/MacOS/cli` |
+| `mp-weixin` 产物目录 | 位置参数、`-p`、`--proj`、`--project` | 否 | 自动探测 `./unpackage/dist/dev/mp-weixin` 和 `./dist/dev/mp-weixin` | `uni-app` / `uni-app x` 的微信小程序编译产物目录 |
+| 微信开发者工具路径 | `-w`、`--wd`、`--wechat-devtools` | 否 | 平台默认安装路径 | 微信开发者工具 `.app` 路径；工具会自动解析到 `Contents/MacOS/cli` |
 | 微信开发者工具 CLI 路径 | `--cli-path` | 否 | - | 如果已经拿到 `cli` 二进制路径，可以用它替代 `-w` |
 | Web Panel 端口 | `--port` | 否 | `17890` | 本地 Web Panel 端口；如果被占用会自动尝试后续端口 |
 | 微信开发者工具 automator 端口 | `--automator-port` | 否 | 自动选择 | 连接微信开发者工具自动化服务的端口；默认从 `9420` 开始寻找可用端口，也可以显式指定 |
@@ -79,7 +85,7 @@ yarn global add @uni_toolkit/uniapp-miniprogram-devtool
 | `UNIAPP_MINIPROGRAM_DEVTOOL_AUTOMATOR_PORT` | - | 未传 `--automator-port` 时使用的微信开发者工具 automator 端口 |
 | `UNIAPP_MINIPROGRAM_DEVTOOL_NO_OPEN` | - | 设为 `1` 时不自动打开浏览器 |
 
-启动示例：
+启动示例（非默认安装位置时）：
 
 ```bash
 umpd unpackage/dist/dev/mp-weixin -w /Volumes/Elements/Applications/wechatwebdevtools.app
@@ -90,6 +96,8 @@ umpd unpackage/dist/dev/mp-weixin -w /Volumes/Elements/Applications/wechatwebdev
 ```txt
 /Volumes/Elements/Applications/wechatwebdevtools.app/Contents/MacOS/cli
 ```
+
+如果开发者工具安装在默认路径（macOS：`/Applications/wechatwebdevtools.app`，Windows：`C:/Program Files (x86)/Tencent/微信web开发者工具`），`-w` 可以完全省略。
 
 如果你确实已经拿到了微信开发者工具的 `cli` 二进制路径，也可以显式传：
 
@@ -138,9 +146,15 @@ umpd --project <mp-weixin 产物目录> --wechat-devtools <wechatwebdevtools.app
 umpd -p <mp-weixin 产物目录> --cli-path <微信开发者工具 cli 路径>
 ```
 
+在项目根目录下（存在 `./unpackage/dist/dev/mp-weixin` 或 `./dist/dev/mp-weixin` 且开发者工具为默认安装路径时）可直接零参数运行：
+
+```bash
+umpd
+```
+
 ## 工作原理
 
-1. 读取你显式传入的 `mp-weixin` 编译产物目录。
+1. 读取 `mp-weixin` 编译产物目录（显式传入，或自动探测 `./unpackage/dist/dev/mp-weixin` 和 `./dist/dev/mp-weixin`）。
 2. 解析页面 JS 中的 `const __returned__ = { ... }`。
 3. 从表达式中推断 `a -> message`、`b -> count` 这类映射。
 4. 读取 WXML 和 sourcemap 辅助展示。
