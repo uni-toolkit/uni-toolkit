@@ -71,7 +71,7 @@ umpd
 | 配置 | 缩写 / 别名 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
 | `mp-weixin` 产物目录 | 位置参数、`-p`、`--proj`、`--project` | 否 | 自动探测 `./unpackage/dist/dev/mp-weixin` 和 `./dist/dev/mp-weixin` | `uni-app` / `uni-app x` 的微信小程序编译产物目录 |
-| 微信开发者工具路径 | `-w`、`--wd`、`--wechat-devtools` | 否 | 平台默认安装路径 | 微信开发者工具 `.app` 路径；工具会自动解析到 `Contents/MacOS/cli` |
+| 微信开发者工具路径 | `-w`、`--wd`、`--wechat-devtools` | 否 | 平台默认安装路径 | 微信开发者工具路径；macOS 传 `.app` 路径会自动解析到 `Contents/MacOS/cli`，Windows 传安装目录会自动解析到目录下的 `cli.bat` |
 | 微信开发者工具 CLI 路径 | `--cli-path` | 否 | - | 如果已经拿到 `cli` 二进制路径，可以用它替代 `-w` |
 | Web Panel 端口 | `--port` | 否 | `17890` | 本地 Web Panel 端口；如果被占用会自动尝试后续端口 |
 | 微信开发者工具 automator 端口 | `--automator-port` | 否 | 自动选择 | 连接微信开发者工具自动化服务的端口；默认从 `9420` 开始寻找可用端口，也可以显式指定 |
@@ -95,6 +95,12 @@ umpd unpackage/dist/dev/mp-weixin -w /Volumes/Elements/Applications/wechatwebdev
 
 ```txt
 /Volumes/Elements/Applications/wechatwebdevtools.app/Contents/MacOS/cli
+```
+
+Windows 下同理，直接传安装目录，工具会自动解析到目录下的 `cli.bat`：
+
+```bash
+umpd unpackage/dist/dev/mp-weixin -w "C:/Program Files (x86)/Tencent/微信web开发者工具"
 ```
 
 如果开发者工具安装在默认路径（macOS：`/Applications/wechatwebdevtools.app`，Windows：`C:/Program Files (x86)/Tencent/微信web开发者工具`），`-w` 可以完全省略。

@@ -15,7 +15,8 @@ function printHelp(): void {
   并按平台查找微信开发者工具默认安装路径（macOS: /Applications/wechatwebdevtools.app，
   Windows: C:/Program Files (x86)/Tencent/微信web开发者工具）。
   mp-weixin 产物目录可直接作为第一个参数，也可用 -p / --proj / --project 指定。
-  -w / --wd / --wechat-devtools 都可以传微信开发者工具 .app 路径，工具会自动解析到 Contents/MacOS/cli。
+  -w / --wd / --wechat-devtools 都可以传微信开发者工具路径，工具会自动解析：
+    macOS 传 .app 路径时解析到 Contents/MacOS/cli；Windows 传安装目录时解析到目录下的 cli.bat。
   非默认安装位置时才需要显式传 -w。
 
 示例:
