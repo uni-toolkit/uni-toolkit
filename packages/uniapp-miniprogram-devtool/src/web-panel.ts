@@ -138,7 +138,7 @@ tr.flash { animation: flash 1.05s ease-out; }
 .template-search { width:100%; margin-bottom:12px; }
 .template-search.with-tools { margin-bottom:0; flex:1 1 220px; min-width:180px; }
 .template-list { display:grid; gap:4px; }
-.template-node { border:1px solid transparent; background:transparent; width:100%; height:auto; justify-content:flex-start; text-align:left; padding:6px 10px; border-radius:6px; cursor:pointer; color:var(--foreground); box-shadow:none; font:400 13px/1.5 var(--mono); }
+.template-node { display:block; border:1px solid transparent; background:transparent; width:100%; height:auto; text-align:left; padding:6px 10px; border-radius:6px; cursor:pointer; color:var(--foreground); box-shadow:none; font:400 13px/1.5 var(--mono); }
 .template-node:hover { background:var(--accent); }
 .template-node.active { background:var(--primary); color:var(--primary-foreground); }
 .template-node.active .template-kind { color:var(--active-muted); }
