@@ -183,13 +183,13 @@ function generate(targetRoot: string): ProjectAnalysis {
   return result;
 }
 
-function printStartup(targetRoot: string, result: ProjectAnalysis): void {
+function printStartup(targetRoot: string, result: ProjectAnalysis, cliPath: string): void {
   const htmlPath = path.join(OUTPUT_DIR, 'uniapp-miniprogram-devtool.html');
   const pageCount = Object.keys(result.pages).length;
   const keyCount = Object.values(result.pages).reduce((sum, page) => sum + page.keys.length, 0);
-  console.clear();
   console.log('uniapp-miniprogram-devtool');
   console.log('目标目录:', targetRoot);
+  console.log('开发者工具 CLI:', cliPath);
   console.log('页面数:', pageCount, '键数量:', keyCount);
   console.log('报告文件:', htmlPath);
   console.log('');
@@ -197,6 +197,7 @@ function printStartup(targetRoot: string, result: ProjectAnalysis): void {
 }
 
 export async function main(argv: string[]): Promise<void> {
+  if (process.stdout.isTTY) console.clear();
   const cliPath = getRequiredCliPath(argv);
   const panelPort = Number(
     getOptionValue(argv, '--port') ||
@@ -210,7 +211,7 @@ export async function main(argv: string[]): Promise<void> {
   const targetRoot = getRequiredTarget(argv);
   let lastMtime = 0;
   let currentAnalysis = generate(targetRoot);
-  printStartup(targetRoot, currentAnalysis);
+  printStartup(targetRoot, currentAnalysis, cliPath);
 
   let pollTimer: NodeJS.Timeout | undefined;
   let stopInspector: (() => void) | undefined;

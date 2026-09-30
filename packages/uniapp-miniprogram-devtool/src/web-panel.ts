@@ -885,7 +885,11 @@ setInterval(function () { refresh(false); }, 300);
 
 function openBrowser(url: string): void {
   if (process.env.UNIAPP_MINIPROGRAM_DEVTOOL_NO_OPEN === '1' || process.env.UNIAPPX_KEYMAP_NO_OPEN === '1') return;
-  if (process.platform === 'darwin') spawn('open', [url], { detached: true, stdio: 'ignore' }).unref();
+  const command = process.platform === 'win32' ? 'cmd' : process.platform === 'darwin' ? 'open' : 'xdg-open';
+  const args = process.platform === 'win32' ? ['/c', 'start', '""', url] : [url];
+  spawn(command, args, { detached: true, stdio: 'ignore' })
+    .on('error', () => {})
+    .unref();
 }
 
 function defaultWebPanelPort(): number {

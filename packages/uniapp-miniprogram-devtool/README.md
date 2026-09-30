@@ -144,11 +144,12 @@ Web Panel 当前包含：
 ## 常用参数
 
 ```bash
-umpd <mp-weixin 产物目录> -w <wechatwebdevtools.app 路径>
-umpd <mp-weixin 产物目录> -w <wechatwebdevtools.app 路径> --port 17890
-umpd <mp-weixin 产物目录> -w <wechatwebdevtools.app 路径> --automator-port 9421
-umpd -p <mp-weixin 产物目录> -w <wechatwebdevtools.app 路径>
-umpd --project <mp-weixin 产物目录> --wechat-devtools <wechatwebdevtools.app 路径>
+umpd <mp-weixin 产物目录>
+umpd <mp-weixin 产物目录> -w <微信开发者工具路径>
+umpd <mp-weixin 产物目录> -w <微信开发者工具路径> --port 17890
+umpd <mp-weixin 产物目录> -w <微信开发者工具路径> --automator-port 9421
+umpd -p <mp-weixin 产物目录> [-w <微信开发者工具路径>]
+umpd --project <mp-weixin 产物目录> [--wechat-devtools <微信开发者工具路径>]
 umpd -p <mp-weixin 产物目录> --cli-path <微信开发者工具 cli 路径>
 ```
 
