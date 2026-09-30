@@ -1,3 +1,24 @@
+## [0.4.3](https://github.com/uni-toolkit/uni-toolkit/compare/v0.4.2...v0.4.3) (2026-09-30)
+
+
+### Bug Fixes
+
+* **uniapp-miniprogram-devtool:** platform-aware help text, cross-platform browser open, and persistent detection logs ([#26](https://github.com/uni-toolkit/uni-toolkit/issues/26)) ([002c62d](https://github.com/uni-toolkit/uni-toolkit/commit/002c62d43775e76115adc09797366475d59e8995))
+* **uniapp-miniprogram-devtool:** use block layout for template tree nodes to fix row alignment ([#23](https://github.com/uni-toolkit/uni-toolkit/issues/23)) ([a4f7d83](https://github.com/uni-toolkit/uni-toolkit/commit/a4f7d83387abc2c548ccfbb03fd9d85eab814a3f))
+
+
+### Code Refactoring
+
+* **shared:** split component config helpers ([#25](https://github.com/uni-toolkit/uni-toolkit/issues/25)) ([594575c](https://github.com/uni-toolkit/uni-toolkit/commit/594575c4f14d7bf21d1545a28ab112670acc0a2b))
+
+
+### Features
+
+* **uniapp-miniprogram-devtool:** redesign panel and report UI with light/dark theme support ([#22](https://github.com/uni-toolkit/uni-toolkit/issues/22)) ([f601083](https://github.com/uni-toolkit/uni-toolkit/commit/f6010837987bba55178c2f1a02a06f6e73d94ddb))
+* **uniapp-miniprogram-devtool:** support zero-arg run with auto-detection of mp-weixin output and default devtools path ([#24](https://github.com/uni-toolkit/uni-toolkit/issues/24)) ([99c7e62](https://github.com/uni-toolkit/uni-toolkit/commit/99c7e62cf734eafdc358746a345820fc8cfbbe0b))
+
+
+
 ## [0.4.2](https://github.com/uni-toolkit/uni-toolkit/compare/v0.4.1...v0.4.2) (2026-09-29)
 
 
