@@ -1,6 +1,13 @@
 import fs from 'node:fs';
 import { createFilter, type FilterPattern } from '@rollup/pluginutils';
-import { getOutputJsonPath, isMiniProgram, parseVueRequest, resolvePlatformConfig } from '@uni_toolkit/shared';
+import {
+  getOutputJsonPath,
+  isMiniProgram,
+  matchComponentConfigs,
+  parseVueRequest,
+  removeComponentConfigTags,
+  resolvePlatformConfig,
+} from '@uni_toolkit/shared';
 import { merge } from 'rattail';
 import type { Compiler, Module } from 'webpack';
 
@@ -55,14 +62,14 @@ export class WebpackComponentConfigPlugin {
 
     try {
       const content = fs.readFileSync(filename, 'utf-8');
-      const matches = content.match(/<component-config>([\s\S]*?)<\/component-config>/g);
+      const matches = matchComponentConfigs(content);
       if (!matches) {
         return;
       }
 
       matches.forEach((match) => {
-        const configContent = match.replace(/<component-config>|<\/component-config>/g, '');
         try {
+          const configContent = removeComponentConfigTags(match);
           const componentConfig = resolvePlatformConfig(JSON.parse(configContent));
 
           const outputPath = getOutputJsonPath(resource);
