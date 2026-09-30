@@ -1,5 +1,12 @@
 import fs from 'node:fs';
-import { getOutputJsonPath, isMiniProgram, resolvePlatformConfig } from '@uni_toolkit/shared';
+import {
+  getOutputJsonPath,
+  isMiniProgram,
+  matchComponentConfigs,
+  removeComponentConfigs,
+  removeComponentConfigTags,
+  resolvePlatformConfig,
+} from '@uni_toolkit/shared';
 import { merge } from 'rattail';
 import { createFilter, type FilterPattern, type PluginOption } from 'vite';
 
@@ -27,18 +34,18 @@ export default function vitePluginComponentConfig(
       if (!createFilter(options.include, options.exclude)(id)) {
         return;
       }
-      const matches = code.match(/<component-config>([\s\S]*?)<\/component-config>/g);
+      const matches = matchComponentConfigs(code);
       if (!matches) {
         return;
       }
 
       matches.forEach((match) => {
-        const content = match.replace(/<component-config>|<\/component-config>/g, '');
+        const content = removeComponentConfigTags(match);
         const componentConfig = resolvePlatformConfig(JSON.parse(content));
         map.set(getOutputJsonPath(id), componentConfig);
       });
 
-      return code.replace(/<component-config>[\s\S]*?<\/component-config>/g, '');
+      return removeComponentConfigs(code);
     },
     closeBundle() {
       if (map.size === 0) {
