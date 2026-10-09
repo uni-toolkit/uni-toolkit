@@ -30,6 +30,8 @@ export function resolveDefaultCliPath(): string | undefined {
 let miniProgram: MiniProgramApi | null = null;
 let connecting: Promise<MiniProgramApi> | null = null;
 let activeProjectPath = '';
+// 代际计数：disconnect 时递增，使进行中的 launch 结果作废，避免断开返回后又装上活会话
+let generation = 0;
 
 export interface LogEntry {
   time: string;
@@ -88,11 +90,21 @@ export async function ensureMiniProgram(options: ConnectOptions = {}): Promise<M
       );
     }
 
+    const myGeneration = generation;
     const instance = (await automator.launch({
       cliPath,
       projectPath,
       timeout: Number(process.env.WEAPP_LAUNCH_TIMEOUT || 45_000),
     })) as MiniProgramApi;
+    if (myGeneration !== generation) {
+      // launch 期间有人调用了 disconnect，这个实例直接丢弃，不能装成活会话
+      try {
+        await instance.disconnect();
+      } catch {
+        // 忽略断开时的 websocket 报错
+      }
+      throw new Error('连接过程中已被断开');
+    }
     // 每次新连接清空并重新挂日志/异常监听
     clearConsoleLogs();
     clearExceptions();
@@ -111,6 +123,7 @@ export async function ensureMiniProgram(options: ConnectOptions = {}): Promise<M
 }
 
 export async function disconnect(): Promise<void> {
+  generation++;
   if (!miniProgram) return;
   const instance = miniProgram;
   miniProgram = null;
