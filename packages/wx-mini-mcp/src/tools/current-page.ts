@@ -21,7 +21,7 @@ export function registerCurrentPageTool(server: Server): void {
       const targetDir = resolveTargetDir(defaultProjectRoot());
       const analysis = loadAnalysis(targetDir);
       const { found, rows, unmappedKeys } = buildNamedRows(analysis, normalizeRoute(state.route), state.data);
-      return text({ route: state.route, keymapFound: found, rows, unmappedKeys });
+      return text({ route: state.route, stackLength: state.stackLength, keymapFound: found, rows, unmappedKeys });
     },
   );
 }
