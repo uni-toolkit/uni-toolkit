@@ -58,21 +58,67 @@ async function isPortFree(port: number): Promise<boolean> {
   });
 }
 
+// automator.connect 没有任何超时（Connection.create 只监听 open/error）：
+// 对接受 TCP 但不响应 ws 握手的非自动化服务会永久挂起，这里加探测超时兜底
+const CONNECT_PROBE_TIMEOUT = 3_000;
+
 async function tryConnect(endpoint: string): Promise<MiniProgramApi | null> {
-  try {
-    return (await automator.connect({ wsEndpoint: endpoint })) as MiniProgramApi;
-  } catch {
-    return null; // 端点上没有自动化窗口
-  }
+  let expired = false;
+  const attempt = (automator.connect({ wsEndpoint: endpoint }) as Promise<MiniProgramApi>)
+    .then((instance) => {
+      if (!expired) return instance;
+      // 超时后才连上，立即丢弃，避免留下无人持有的悬挂连接
+      try {
+        instance.disconnect();
+      } catch {
+        // 忽略断开时的报错
+      }
+      return null;
+    })
+    .catch(() => null);
+  const timeout = new Promise<null>((resolve) => {
+    setTimeout(() => {
+      expired = true;
+      resolve(null);
+    }, CONNECT_PROBE_TIMEOUT);
+  });
+  return Promise.race([attempt, timeout]);
 }
 
-function launch(projectPath: string, cliPath: string, port?: number) {
+function launch(projectPath: string, cliPath: string, port: number) {
   return automator.launch({
     cliPath,
     projectPath,
     port,
     timeout: Number(process.env.WEAPP_LAUNCH_TIMEOUT || 45_000),
   });
+}
+
+// 自己探测并指定端口 launch，而不是交给 automator 自动分配：
+// automator 不会暴露实际使用的端口（MiniProgram 的 connection 是 private），
+// 不记录端口的话，下次重连无法直连、只能再次 launch 导致模拟器刷新
+const PORT_SCAN_LIMIT = 20;
+
+async function launchOnFreePort(
+  projectPath: string,
+  cliPath: string,
+  startPort: number,
+): Promise<{ instance: MiniProgramApi; port: number }> {
+  let lastError: unknown;
+  for (let port = startPort; port < startPort + PORT_SCAN_LIMIT; port++) {
+    if (!(await isPortFree(port))) continue;
+    try {
+      const instance = (await launch(projectPath, cliPath, port)) as MiniProgramApi;
+      return { instance, port };
+    } catch (err) {
+      // 探测到 launch 之间端口被抢占，试下一个；其他错误直接抛出
+      if (!(err instanceof Error) || !err.message.includes('in use')) throw err;
+      lastError = err;
+    }
+  }
+  throw lastError instanceof Error
+    ? lastError
+    : new Error(`端口 ${startPort}~${startPort + PORT_SCAN_LIMIT - 1} 均被占用，无法启动自动化`);
 }
 
 // 优先直连已开启自动化的项目窗口（disconnect 只关 ws，窗口和自动化端口还在）；
@@ -88,21 +134,19 @@ async function connectOrLaunch(cliPath: string, projectPath: string, force: bool
       if (instance) return instance;
     }
 
-    // 首选端口被占用：多半是已有自动化窗口在跑（比如手动开着的开发者工具），优先直接复用；
-    // 占用的不是自动化服务（连不上）才退回 launch，交给 automator 自动分配端口
+    // 首选端口被占用：多半是已有自动化窗口在跑（比如手动开着的开发者工具），优先直接复用
     if (!(await isPortFree(port))) {
       const instance = await tryConnect(wsEndpoint(host, port));
       if (instance) {
         lastAutomatorPort = port;
         return instance;
       }
-      return (await launch(projectPath, cliPath)) as MiniProgramApi;
     }
   }
 
-  const instance = (await launch(projectPath, cliPath, port)) as MiniProgramApi;
-  lastAutomatorPort = port;
-  return instance;
+  const result = await launchOnFreePort(projectPath, cliPath, port);
+  lastAutomatorPort = result.port;
+  return result.instance;
 }
 
 export function currentSession(): { connected: boolean; projectPath: string } {
