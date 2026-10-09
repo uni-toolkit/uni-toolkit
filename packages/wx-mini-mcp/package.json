@@ -1,0 +1,52 @@
+{
+  "name": "@uni_toolkit/wx-mini-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for WeChat Mini Program automation via WeChat DevTools (miniprogram-automator).",
+  "type": "module",
+  "bin": {
+    "wx-mini-mcp": "./build/index.js"
+  },
+  "files": [
+    "build"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "start": "node build/index.js",
+    "inspector": "npx @modelcontextprotocol/inspector node build/index.js"
+  },
+  "keywords": [
+    "uni-app",
+    "微信小程序",
+    "miniprogram",
+    "mcp",
+    "miniprogram-automator"
+  ],
+  "author": "chouchouji <1305974212@qq.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/uni-toolkit/uni-toolkit/tree/main/packages/wx-mini-mcp",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uni-toolkit/uni-toolkit.git",
+    "directory": "packages/wx-mini-mcp"
+  },
+  "bugs": {
+    "url": "https://github.com/uni-toolkit/uni-toolkit/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "@uni_toolkit/uniapp-miniprogram-devtool": "workspace:*",
+    "miniprogram-automator": "^0.12.1",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "typescript": "catalog:"
+  }
+}
