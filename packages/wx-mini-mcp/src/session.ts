@@ -1,5 +1,4 @@
 import fs from 'node:fs';
-import { createRequire } from 'node:module';
 import net from 'node:net';
 import path from 'node:path';
 import automator from 'miniprogram-automator';
@@ -37,7 +36,6 @@ interface MiniProgramInternals {
   };
 }
 
-const require = createRequire(import.meta.url);
 const WebSocket = require('ws') as WebSocketConstructor;
 const Transport = require('miniprogram-automator/out/Transport').default as Constructor;
 const Connection = require('miniprogram-automator/out/Connection').default as Constructor;

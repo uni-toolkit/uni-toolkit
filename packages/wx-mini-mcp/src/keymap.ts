@@ -1,9 +1,7 @@
 import fs from 'node:fs';
-import { createRequire } from 'node:module';
 import path from 'node:path';
 import type { ProjectAnalysis } from '@uni_toolkit/uniapp-miniprogram-devtool/dist/core.cjs';
 
-const require = createRequire(import.meta.url);
 const { analyzeProject } = require('@uni_toolkit/uniapp-miniprogram-devtool/dist/core.cjs') as {
   analyzeProject: (targetRoot: string) => ProjectAnalysis;
 };

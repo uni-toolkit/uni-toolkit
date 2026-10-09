@@ -1,5 +1,4 @@
 node_modules/
 dist/
-packages/*/build/
 .vscode/
 .DS_Store

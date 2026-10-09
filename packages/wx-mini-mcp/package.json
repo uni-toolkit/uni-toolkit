@@ -2,18 +2,19 @@
   "name": "@uni_toolkit/wx-mini-mcp",
   "version": "0.1.0",
   "description": "MCP server for WeChat Mini Program automation via WeChat DevTools (miniprogram-automator).",
-  "type": "module",
+  "type": "commonjs",
   "bin": {
-    "wx-mini-mcp": "./build/index.js"
+    "wx-mini-mcp": "./dist/index.js"
   },
   "files": [
-    "build"
+    "dist"
   ],
   "scripts": {
     "build": "pnpm run typecheck && tsdown",
     "typecheck": "tsc --noEmit",
-    "watch": "tsdown --watch",
-    "start": "node build/index.js",
+    "watch": "tsdown --watch --sourcemap",
+    "start": "node dist/index.js",
+    "start:debug": "node --enable-source-maps dist/index.js",
     "inspector": "npx @modelcontextprotocol/inspector && pnpm run start"
   },
   "keywords": [
