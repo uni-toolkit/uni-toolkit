@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { buildNamedRows, loadAnalysis, normalizeRoute, resolveTargetDir } from '../keymap.js';
 import { readCurrentPage } from '../page.js';
-import { ensureMiniProgram } from '../session.js';
+import { withMiniProgram } from '../session.js';
 import { defaultProjectRoot, handle, type Server, text } from './utils.js';
 
 export function registerCurrentPageTool(server: Server): void {
@@ -13,8 +13,7 @@ export function registerCurrentPageTool(server: Server): void {
       translate: z.boolean().optional().describe('uni-app 项目：结合 keymap 把混淆 key 翻译回源码变量名，默认 false'),
     },
     handle(async ({ withData, translate }) => {
-      const mp = await ensureMiniProgram();
-      const state = await readCurrentPage(mp, withData !== false);
+      const state = await withMiniProgram((mp) => readCurrentPage(mp, withData !== false));
       if (!state) return text('当前没有已加载的页面');
       if (!translate || !state.data) return text(state);
 

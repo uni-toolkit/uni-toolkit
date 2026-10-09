@@ -73,15 +73,15 @@ src/
 | `WEAPP_PROJECT_PATH` | 默认小程序项目路径（`mp_connect` 不传 `projectPath` 时使用） |
 | `WECHAT_DEVTOOLS_CLI_PATH` | 微信开发者工具 CLI 路径；不传则按平台探测默认安装路径（macOS `/Applications/wechatwebdevtools.app`，Windows `C:/Program Files (x86)/Tencent/微信web开发者工具`） |
 | `WEAPP_LAUNCH_TIMEOUT` | 启动超时毫秒数，默认 45000 |
-| `WEAPP_AUTOMATOR_PORT` | 启动自动化时使用的首选端口，默认 9420；被占用时向后扫描空闲端口并记录，供下次直连复用 |
+| `WEAPP_AUTOMATOR_PORT` | 启动自动化时使用的首选端口，默认 9420；被占用时向后扫描空闲端口并记录，供同项目下次直连复用 |
 | `WEAPP_AUTOMATOR_HOST` | 自动化地址的主机名，默认 `127.0.0.1` |
-| `WEAPP_WS_ENDPOINT` | 已开启自动化的项目窗口地址（如 `ws://127.0.0.1:9420`），设置后优先直连、不再重新启动，避免模拟器重复刷新；直连失败自动回退为启动 |
+| `WEAPP_WS_ENDPOINT` | 已开启自动化的项目窗口地址（如 `ws://127.0.0.1:9420`），设置后优先直连、不再重新启动，避免模拟器重复刷新；该地址应与 `WEAPP_PROJECT_PATH` 指向同一项目，直连失败自动回退为启动 |
 
 ## 工具列表
 
 | Tool | 说明 |
 | --- | --- |
-| `mp_connect` | 启动并连接开发者工具（惰性连接，后续工具自动复用） |
+| `mp_connect` | 启动并连接开发者工具（同项目自动复用；传入不同 `projectPath` 时自动切换） |
 | `mp_disconnect` | 断开自动化连接 |
 | `mp_current_page` | 当前页面 route、页面栈、`page.data`；`translate: true` 时把混淆 key 翻译回源码变量名 |
 | `mp_navigate` | 页面导航（navigateTo / redirectTo / reLaunch / switchTab / navigateBack） |

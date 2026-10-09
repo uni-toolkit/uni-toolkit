@@ -10,9 +10,11 @@ export function registerConnectTools(server: Server): void {
       projectPath: z
         .string()
         .optional()
-        .describe('小程序项目目录（含 project.config.json）。也可用环境变量 WEAPP_PROJECT_PATH'),
+        .describe(
+          '小程序项目目录（含 project.config.json）。与当前项目不同时自动切换；也可用环境变量 WEAPP_PROJECT_PATH',
+        ),
       cliPath: z.string().optional().describe('微信开发者工具 CLI 路径。不传则按平台探测默认安装路径'),
-      force: z.boolean().optional().describe('强制断开重连'),
+      force: z.boolean().optional().describe('强制跳过已有连接和直连复用，通过 CLI 重新启动'),
     },
     handle(async ({ projectPath, cliPath, force }) => {
       await ensureMiniProgram({ projectPath, cliPath, force });

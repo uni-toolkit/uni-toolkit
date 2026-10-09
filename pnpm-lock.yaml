@@ -304,6 +304,9 @@ importers:
       miniprogram-automator:
         specifier: ^0.12.1
         version: 0.12.1(supports-color@10.2.2)
+      ws:
+        specifier: ^6.2.3
+        version: 6.2.3
       zod:
         specifier: ^3.24.0
         version: 3.25.76

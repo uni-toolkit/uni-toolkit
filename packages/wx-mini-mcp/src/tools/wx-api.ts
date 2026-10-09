@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ensureMiniProgram } from '../session.js';
+import { withMiniProgram } from '../session.js';
 import { handle, type Server, text } from './utils.js';
 
 export function registerWxApiTools(server: Server): void {
@@ -11,8 +11,7 @@ export function registerWxApiTools(server: Server): void {
       args: z.array(z.unknown()).optional().describe('参数数组，如 [{ "title": "hi" }]'),
     },
     handle(async ({ method, args }) => {
-      const mp = await ensureMiniProgram();
-      const result = await mp.callWxMethod(method, ...(args || []));
+      const result = await withMiniProgram((mp) => mp.callWxMethod(method, ...(args || [])));
       return text(result ?? '已调用');
     }),
   );
@@ -26,12 +25,11 @@ export function registerWxApiTools(server: Server): void {
       restore: z.boolean().optional().describe('true = 恢复原始实现（忽略 result）'),
     },
     handle(async ({ method, result, restore }) => {
-      const mp = await ensureMiniProgram();
       if (restore) {
-        await mp.restoreWxMethod(method);
+        await withMiniProgram((mp) => mp.restoreWxMethod(method));
         return text(`已恢复 wx.${method}`);
       }
-      await mp.mockWxMethod(method, result ?? {});
+      await withMiniProgram((mp) => mp.mockWxMethod(method, result ?? {}));
       return text(`已 mock wx.${method}`);
     }),
   );

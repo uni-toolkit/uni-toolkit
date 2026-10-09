@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { evaluateOnPage } from '../evaluate.js';
 import { waitForPage } from '../page.js';
-import { ensureMiniProgram } from '../session.js';
+import { withMiniProgram } from '../session.js';
 import { handle, type Server, text } from './utils.js';
 
 export function registerSetDataTool(server: Server): void {
@@ -12,17 +12,18 @@ export function registerSetDataTool(server: Server): void {
       data: z.record(z.unknown()).describe('要设置的数据对象，如 { "b": "abc" }'),
     },
     handle(async ({ data }) => {
-      const mp = await ensureMiniProgram();
-      const state = await waitForPage(mp);
-      if (!state) return text('当前没有已加载的页面');
-      await evaluateOnPage(
-        mp,
-        (top: any, d: Record<string, unknown>) => {
-          top.setData(d);
-        },
-        data,
-      );
-      return text('已设置');
+      return withMiniProgram(async (mp) => {
+        const state = await waitForPage(mp);
+        if (!state) return text('当前没有已加载的页面');
+        await evaluateOnPage(
+          mp,
+          (top: any, d: Record<string, unknown>) => {
+            top.setData(d);
+          },
+          data,
+        );
+        return text('已设置');
+      });
     }),
   );
 }
