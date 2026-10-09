@@ -10,10 +10,11 @@
     "build"
   ],
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc --watch",
+    "build": "pnpm run typecheck && tsdown",
+    "typecheck": "tsc --noEmit",
+    "watch": "tsdown --watch",
     "start": "node build/index.js",
-    "inspector": "npx @modelcontextprotocol/inspector node build/index.js"
+    "inspector": "npx @modelcontextprotocol/inspector && pnpm run start"
   },
   "keywords": [
     "uni-app",
@@ -48,6 +49,7 @@
   },
   "devDependencies": {
     "@types/node": "catalog:",
+    "tsdown": "catalog:",
     "typescript": "catalog:"
   }
 }
