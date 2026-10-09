@@ -37,7 +37,8 @@ export function registerCallMethodTool(server: Server): void {
         }
       }
 
-      const callArgs = args && args.length > 0 ? args : isEventHandler ? [{ type: 'tap' }] : [];
+      // 区分「未传」与「显式传空数组」：只有未传时才给事件处理器补合成 tap 事件
+      const callArgs = args !== undefined ? args : isEventHandler ? [{ type: 'tap' }] : [];
       const called = await evaluateOnPage(
         mp,
         (top: any, fn: string, a: unknown[]) => {
