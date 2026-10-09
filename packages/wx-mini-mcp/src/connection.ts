@@ -32,6 +32,8 @@ let connecting: Promise<MiniProgramApi> | null = null;
 let activeProjectPath = '';
 // 代际计数：disconnect 时递增，使进行中的 launch 结果作废，避免断开返回后又装上活会话
 let generation = 0;
+// 上次成功 launch 的自动化端口，下次优先直连避免 cli auto 重载项目导致模拟器刷新
+let lastWsEndpoint: string | null = null;
 
 export interface LogEntry {
   time: string;
@@ -91,11 +93,29 @@ export async function ensureMiniProgram(options: ConnectOptions = {}): Promise<M
     }
 
     const myGeneration = generation;
-    const instance = (await automator.launch({
-      cliPath,
-      projectPath,
-      timeout: Number(process.env.WEAPP_LAUNCH_TIMEOUT || 45_000),
-    })) as MiniProgramApi;
+    // 优先直连已开启自动化的项目窗口（disconnect 只关 ws，窗口和自动化端口还在）；
+    // 直连失败再回退 launch（cli auto 会重载项目窗口，导致模拟器重新编译刷新）
+    let instance: MiniProgramApi | null = null;
+    const endpoint = process.env.WEAPP_WS_ENDPOINT || lastWsEndpoint;
+    if (endpoint && !options.force) {
+      try {
+        instance = (await automator.connect({ wsEndpoint: endpoint })) as MiniProgramApi;
+      } catch {
+        instance = null;
+      }
+    }
+    if (!instance) {
+      const port = Number(process.env.WEAPP_AUTOMATOR_PORT || 9420);
+      const timeout = Number(process.env.WEAPP_LAUNCH_TIMEOUT || 45_000);
+      try {
+        instance = (await automator.launch({ cliPath, projectPath, port, timeout })) as MiniProgramApi;
+        lastWsEndpoint = `ws://127.0.0.1:${port}`;
+      } catch (err) {
+        // 端口被其他进程占用时退回自动分配端口（此时无法记录端口，下次仍会走 launch）
+        if (!String(err).includes('in use')) throw err;
+        instance = (await automator.launch({ cliPath, projectPath, timeout })) as MiniProgramApi;
+      }
+    }
     if (myGeneration !== generation) {
       // launch 期间有人调用了 disconnect，这个实例直接丢弃，不能装成活会话
       try {
