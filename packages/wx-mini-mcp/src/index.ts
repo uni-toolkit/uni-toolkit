@@ -252,18 +252,23 @@ server.tool(
   },
   async ({ code }) => {
     const mp = await ensureMiniProgram();
-    // 表达式优先，语法不合法再按语句体重试（语句体内可用 return）
+    // 先在本地做语法检查，选定表达式或语句体形式再发送；
+    // 运行时异常直接抛出，不能重试——代码可能已经部分执行过，重试会让副作用执行两次
     const attempts = [`function () { return (${code}\n); }`, `function () { ${code}\n }`];
-    let lastError: unknown;
-    for (const declaration of attempts) {
+    let declaration: string | undefined;
+    let syntaxError: unknown;
+    for (const candidate of attempts) {
       try {
-        const result = await callAppFunction(mp, declaration);
-        return text(result === undefined || result === null ? '已执行（无返回值）' : result);
+        new Function(`(${candidate})`);
+        declaration = candidate;
+        break;
       } catch (error) {
-        lastError = error;
+        syntaxError = error;
       }
     }
-    throw lastError;
+    if (declaration === undefined) throw syntaxError;
+    const result = await callAppFunction(mp, declaration);
+    return text(result === undefined || result === null ? '已执行（无返回值）' : result);
   },
 );
 

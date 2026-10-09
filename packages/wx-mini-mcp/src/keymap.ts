@@ -76,6 +76,9 @@ export function buildNamedRows(
   if (page) {
     for (const item of page.keys) {
       mappedKeys.add(item.key);
+      // 分析结果可能滞后于当前页面数据（源码删了该变量、状态已变化）；
+      // data 里不存在该键时不要生成行，否则会报告一个快照中不存在的 key（value: undefined）
+      if (!Object.hasOwn(data, item.key)) continue;
       rows.push({
         source: item.sourceName || item.generatedName || 'unknown',
         key: item.key,
