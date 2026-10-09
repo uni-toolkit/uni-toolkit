@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { loadAnalysis, resolveTargetDir, summarizeAnalysis } from '../keymap.js';
-import { defaultProjectRoot, type Server, text } from './utils.js';
+import { defaultProjectRoot, handle, type Server, text } from './utils.js';
 
 export function registerKeymapTool(server: Server): void {
   server.tool(
@@ -13,10 +13,10 @@ export function registerKeymapTool(server: Server): void {
         .describe('uni-app 项目根目录或 mp-weixin 产物目录。不传则依次尝试已连接项目、WEAPP_PROJECT_PATH、当前目录'),
       refresh: z.boolean().optional().describe('忽略缓存重新分析（代码重新编译后用）'),
     },
-    async ({ projectRoot, refresh }) => {
+    handle(async ({ projectRoot, refresh }) => {
       const targetDir = resolveTargetDir(projectRoot || defaultProjectRoot());
       const analysis = loadAnalysis(targetDir, refresh);
       return text({ targetDir, generatedAt: analysis.generatedAt, pages: summarizeAnalysis(analysis) });
-    },
+    }),
   );
 }

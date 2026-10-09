@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { clearConsoleLogs, clearExceptions, getConsoleLogs, getExceptions, type LogEntry } from '../logs.js';
 import { ensureMiniProgram } from '../session.js';
-import { type Server, text } from './utils.js';
+import { handle, type Server, text } from './utils.js';
 
 // 日志类工具的公共骨架：读缓冲区（可选清空）
 function registerLogTool(
@@ -16,12 +16,12 @@ function registerLogTool(
     name,
     description,
     { clear: z.boolean().optional().describe('读取后清空缓冲，默认 false') },
-    async ({ clear }) => {
+    handle(async ({ clear }) => {
       await ensureMiniProgram();
       const logs = get().slice();
       if (clear) clearBuffer();
       return text(logs.length > 0 ? logs : emptyHint);
-    },
+    }),
   );
 }
 

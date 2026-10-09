@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { currentSession, disconnect, ensureMiniProgram } from '../session.js';
-import { type Server, text } from './utils.js';
+import { handle, type Server, text } from './utils.js';
 
 export function registerConnectTools(server: Server): void {
   server.tool(
@@ -14,14 +14,19 @@ export function registerConnectTools(server: Server): void {
       cliPath: z.string().optional().describe('微信开发者工具 CLI 路径。不传则按平台探测默认安装路径'),
       force: z.boolean().optional().describe('强制断开重连'),
     },
-    async ({ projectPath, cliPath, force }) => {
+    handle(async ({ projectPath, cliPath, force }) => {
       await ensureMiniProgram({ projectPath, cliPath, force });
       return text(`已连接：${currentSession().projectPath}`);
-    },
+    }),
   );
 
-  server.tool('mp_disconnect', '断开与微信开发者工具的自动化连接', {}, async () => {
-    await disconnect();
-    return text('已断开');
-  });
+  server.tool(
+    'mp_disconnect',
+    '断开与微信开发者工具的自动化连接',
+    {},
+    handle(async () => {
+      await disconnect();
+      return text('已断开');
+    }),
+  );
 }

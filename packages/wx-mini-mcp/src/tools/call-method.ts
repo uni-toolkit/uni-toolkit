@@ -3,7 +3,7 @@ import { evaluateOnPage } from '../evaluate.js';
 import { loadAnalysis, normalizeRoute, resolveTargetDir } from '../keymap.js';
 import { waitForPage } from '../page.js';
 import { ensureMiniProgram } from '../session.js';
-import { defaultProjectRoot, type Server, text } from './utils.js';
+import { defaultProjectRoot, handle, type Server, text } from './utils.js';
 
 export function registerCallMethodTool(server: Server): void {
   server.tool(
@@ -13,7 +13,7 @@ export function registerCallMethodTool(server: Server): void {
       method: z.string().describe('方法名：uni-app 源码方法名（自动翻译），或实例上的函数名/事件 id（如 e0）'),
       args: z.array(z.unknown()).optional().describe('传给方法的参数数组。不传时事件处理器自动收到 { type: "tap" }'),
     },
-    async ({ method, args }) => {
+    handle(async ({ method, args }) => {
       const mp = await ensureMiniProgram();
       const state = await waitForPage(mp);
       if (!state) return text('当前没有已加载的页面');
@@ -57,6 +57,6 @@ export function registerCallMethodTool(server: Server): void {
         callArgs,
       );
       return text({ called: method, resolvedAs: called.target, result: called.result ?? '已调用' });
-    },
+    }),
   );
 }
