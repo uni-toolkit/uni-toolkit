@@ -23,6 +23,33 @@ pnpm build wx-mini-mcp
 pnpm run inspector
 ```
 
+## 目录结构
+
+```
+src/
+├── index.ts        # 入口：创建 McpServer、注册所有工具
+├── session.ts      # 连接生命周期：ensureMiniProgram / disconnect、直连优先与 launch 回退、并发防护
+├── logs.ts         # 控制台日志 / 运行时异常缓冲
+├── page.ts         # 页面状态读取（readCurrentPage / waitForPage）
+├── evaluate.ts     # 逻辑层求值（callAppFunction / evaluateOnPage）
+├── keymap.ts       # uni-app 混淆 key ↔ 源码变量名分析
+├── globals.d.ts    # 小程序逻辑层全局函数类型声明（getCurrentPages 等）
+└── tools/          # MCP 工具注册，一个文件一组，各自导出 register*(server)
+    ├── utils.ts        # 公共件：text() / defaultProjectRoot()
+    ├── connect.ts      # 连接管理：mp_connect / mp_disconnect
+    ├── current-page.ts # 当前页面信息与 keymap 翻译：mp_current_page
+    ├── navigate.ts     # 页面导航：mp_navigate
+    ├── screenshot.ts   # 模拟器截图：mp_screenshot
+    ├── wx-api.ts       # wx.* 调用与 mock：mp_call_wx / mp_mock_wx
+    ├── call-method.ts  # 调用页面实例方法：mp_call_method
+    ├── set-data.ts     # 直接修改页面 data：mp_set_data
+    ├── evaluate.ts     # 逻辑层执行任意 JS：mp_evaluate
+    ├── logs.ts         # 日志与异常读取：mp_get_logs / mp_get_exceptions
+    └── keymap.ts       # 混淆 key 映射表：uni_keymap
+```
+
+新增工具：在 `tools/` 下新建文件导出 `register*(server)`，并在 `index.ts` 中注册。
+
 ## 客户端配置
 
 ```json
@@ -47,6 +74,7 @@ pnpm run inspector
 | `WECHAT_DEVTOOLS_CLI_PATH` | 微信开发者工具 CLI 路径；不传则按平台探测默认安装路径（macOS `/Applications/wechatwebdevtools.app`，Windows `C:/Program Files (x86)/Tencent/微信web开发者工具`） |
 | `WEAPP_LAUNCH_TIMEOUT` | 启动超时毫秒数，默认 45000 |
 | `WEAPP_AUTOMATOR_PORT` | 启动自动化时使用的端口，默认 9420；被占用时自动退回系统分配端口 |
+| `WEAPP_AUTOMATOR_HOST` | 自动化地址的主机名，默认 `127.0.0.1` |
 | `WEAPP_WS_ENDPOINT` | 已开启自动化的项目窗口地址（如 `ws://127.0.0.1:9420`），设置后优先直连、不再重新启动，避免模拟器重复刷新；直连失败自动回退为启动 |
 
 ## 工具列表
