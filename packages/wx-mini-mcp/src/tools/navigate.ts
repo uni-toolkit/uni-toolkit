@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { withMiniProgram } from '../session.js';
+import { ensureMiniProgram } from '../session.js';
 import { handle, type Server, text } from './utils.js';
 
 type NavigateMethod = 'navigateTo' | 'redirectTo' | 'reLaunch' | 'switchTab' | 'navigateBack';
@@ -14,13 +14,15 @@ export function registerNavigateTool(server: Server): void {
     },
     handle(async ({ url, method = 'navigateTo' }: { url?: string; method?: NavigateMethod }) => {
       if (method === 'navigateBack') {
-        await withMiniProgram((mp) => mp.navigateBack());
+        const mp = await ensureMiniProgram();
+        await mp.navigateBack();
         return text('已执行 navigateBack');
       }
       if (!url) {
         throw new Error(`method 为 ${method} 时 url 必填（仅 navigateBack 不需要 url）`);
       }
-      await withMiniProgram((mp) => mp[method](url));
+      const mp = await ensureMiniProgram();
+      await mp[method](url);
       return text(`已执行 ${method} ${url}`);
     }),
   );

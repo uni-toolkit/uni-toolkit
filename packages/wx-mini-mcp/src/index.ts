@@ -21,7 +21,7 @@ const server = new McpServer(
       '1. 先 mp_connect 连接项目；uni-app 项目传 mp-weixin 产物目录（如 unpackage/dist/dev/mp-weixin）。',
       '2. page.data 的 key 是编译产物；uni-app 项目用 mp_current_page(translate:true) 或 uni_keymap 翻译回源码变量名。',
       '3. 触发页面交互用 mp_call_method 传源码方法名（如 changeTitle），等价于用户点击；不要尝试模拟触摸事件。',
-      '4. 同项目的 mp_connect 会复用当前连接；force:true 或 automator launch 会重载模拟器并重置页面状态。需要观察交互结果时，先 mp_call_method 再 mp_screenshot，中途不要强制重连。',
+      '4. 每次连接（mp_connect / automator launch）都会重载模拟器并重置页面状态。需要观察交互结果时，先 mp_call_method 再 mp_screenshot，中途不要重连。',
       '5. mp_call_wx 调用 wx.* API；mp_mock_wx 可 mock 其返回值；mp_evaluate 在逻辑层执行任意 JS；mp_set_data 直接改页面 data；mp_get_logs / mp_get_exceptions 读取控制台日志与运行时异常。',
     ].join('\n'),
   },
@@ -48,6 +48,11 @@ process.on('SIGINT', () => {
 });
 process.on('SIGTERM', () => {
   void disconnect().finally(() => process.exit(143));
+});
+// automator 内部的悬挂 promise 在连接断开时会以 unhandledRejection 炸出整页堆栈，压缩成一行日志
+process.on('unhandledRejection', (reason) => {
+  const message = reason instanceof Error ? reason.message : String(reason);
+  console.error(`[wx-mini-mcp] 未处理的异步异常: ${message}`);
 });
 
 main().catch((error) => {
