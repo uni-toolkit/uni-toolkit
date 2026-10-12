@@ -57,6 +57,13 @@ const CONNECT_PROBE_TIMEOUT = 3_000;
 // 超时后才连上的实例打 expired 标记立即 disconnect，不留无人持有的悬挂连接
 async function tryConnect(endpoint: string): Promise<MiniProgramApi | null> {
   let expired = false;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<null>((resolve) => {
+    timer = setTimeout(() => {
+      expired = true;
+      resolve(null);
+    }, CONNECT_PROBE_TIMEOUT);
+  });
   const attempt = (automator.connect({ wsEndpoint: endpoint }) as Promise<MiniProgramApi>)
     .then((instance) => {
       if (!expired) return instance;
@@ -68,13 +75,10 @@ async function tryConnect(endpoint: string): Promise<MiniProgramApi | null> {
       return null;
     })
     .catch(() => null);
-  const timeout = new Promise<null>((resolve) => {
-    setTimeout(() => {
-      expired = true;
-      resolve(null);
-    }, CONNECT_PROBE_TIMEOUT);
-  });
-  return Promise.race([attempt, timeout]);
+  // race 落定后清掉探测定时器，避免成功的连接留下挂着的 3 秒 timer 拖住事件循环
+  const result = await Promise.race([attempt, timeout]);
+  clearTimeout(timer);
+  return result;
 }
 
 function launch(projectPath: string, cliPath: string, port: number) {

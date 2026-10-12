@@ -12,10 +12,13 @@ export function registerScreenshotTool(server: Server): void {
     handle(async () => {
       const mp = await ensureMiniProgram();
       const file = path.join(os.tmpdir(), `wx-mini-mcp-${Date.now()}.png`);
-      await mp.screenshot({ path: file });
-      const base64 = await fs.promises.readFile(file, 'base64');
-      await fs.promises.unlink(file).catch(() => {});
-      return { content: [{ type: 'image' as const, data: base64, mimeType: 'image/png' as const }] };
+      try {
+        await mp.screenshot({ path: file });
+        const base64 = await fs.promises.readFile(file, 'base64');
+        return { content: [{ type: 'image' as const, data: base64, mimeType: 'image/png' as const }] };
+      } finally {
+        await fs.promises.unlink(file).catch(() => {});
+      }
     }),
   );
 }
