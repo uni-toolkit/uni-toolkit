@@ -15,31 +15,13 @@ export interface ConnectOptions {
   force?: boolean;
 }
 
-interface WebSocketLike {
-  once(event: 'open' | 'error', listener: (...args: any[]) => void): this;
-  terminate(): void;
-}
-
-interface WebSocketConstructor {
-  new (endpoint: string, options: { handshakeTimeout: number }): WebSocketLike;
-}
-
-interface Constructor<T = unknown> {
-  new (...args: any[]): T;
-}
-
 interface MiniProgramInternals {
   connection?: {
     transport?: {
-      once(event: 'close', listener: () => void): void;
+      on(event: 'close', listener: () => void): void;
     };
   };
 }
-
-const WebSocket = require('ws') as WebSocketConstructor;
-const Transport = require('miniprogram-automator/out/Transport').default as Constructor;
-const Connection = require('miniprogram-automator/out/Connection').default as Constructor;
-const MiniProgramConstructor = require('miniprogram-automator/out/MiniProgram').default as Constructor<MiniProgramApi>;
 
 export function resolveDefaultCliPath(): string | undefined {
   const candidates =
@@ -71,52 +53,32 @@ async function isPortFree(port: number): Promise<boolean> {
 
 const CONNECT_PROBE_TIMEOUT = 3_000;
 
-// automator.connect 无法取消握手。直接用它内部相同的 Connection/MiniProgram
-// 构造链，并给 ws 设置 handshakeTimeout，超时后可主动销毁底层 socket。
-export async function connectDirect(endpoint: string, timeout = CONNECT_PROBE_TIMEOUT): Promise<MiniProgramApi | null> {
-  return new Promise((resolve) => {
-    let settled = false;
-    let socket: WebSocketLike;
-
-    const finish = (instance: MiniProgramApi | null) => {
-      if (settled) {
-        if (instance) void Promise.resolve(instance.disconnect()).catch(() => {});
-        return;
-      }
-      settled = true;
-      resolve(instance);
-    };
-
-    try {
-      socket = new WebSocket(endpoint, { handshakeTimeout: timeout });
-    } catch {
+// automator.connect 无法取消握手，用 Promise.race 做超时兜底；
+// 超时后才连上的实例打 expired 标记立即 disconnect，不留无人持有的悬挂连接
+async function tryConnect(endpoint: string): Promise<MiniProgramApi | null> {
+  let expired = false;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<null>((resolve) => {
+    timer = setTimeout(() => {
+      expired = true;
       resolve(null);
-      return;
-    }
-
-    socket.once('error', () => {
-      socket.terminate();
-      finish(null);
-    });
-    socket.once('open', () => {
-      const transport = new Transport(socket);
-      const connection = new Connection(transport);
-      const instance = new MiniProgramConstructor(connection);
-      const timer = setTimeout(() => {
-        socket.terminate();
-        finish(null);
-      }, timeout);
-
-      void instance
-        .checkVersion()
-        .then(() => finish(instance))
-        .catch(() => {
-          socket.terminate();
-          finish(null);
-        })
-        .finally(() => clearTimeout(timer));
-    });
+    }, CONNECT_PROBE_TIMEOUT);
   });
+  const attempt = (automator.connect({ wsEndpoint: endpoint }) as Promise<MiniProgramApi>)
+    .then((instance) => {
+      if (!expired) return instance;
+      try {
+        instance.disconnect();
+      } catch {
+        // 连接可能已被开发者工具关闭
+      }
+      return null;
+    })
+    .catch(() => null);
+  // race 落定后清掉探测定时器，避免成功的连接留下挂着的 3 秒 timer 拖住事件循环
+  const result = await Promise.race([attempt, timeout]);
+  clearTimeout(timer);
+  return result;
 }
 
 function launch(projectPath: string, cliPath: string, port: number) {
@@ -146,9 +108,15 @@ async function launchOnFreePort(
       const instance = (await launch(projectPath, cliPath, port)) as MiniProgramApi;
       return { instance, endpoint: wsEndpoint(host, port) };
     } catch (err) {
-      // 探测到 launch 之间端口被抢占，试下一个；其他错误直接抛出
-      if (!(err instanceof Error) || !err.message.includes('in use')) throw err;
-      lastError = err;
+      // 端口在探测后被抢占：属于别人，直接试下一个端口
+      if (err instanceof Error && err.message.includes('in use')) {
+        lastError = err;
+        continue;
+      }
+      // launch 的 checkVersion 偶发在窗口未就绪时失败，此时窗口已打开，直连同端口恢复；不成才抛原始错误
+      const recovered = await tryConnect(wsEndpoint(host, port));
+      if (recovered) return { instance: recovered, endpoint: wsEndpoint(host, port) };
+      throw err;
     }
   }
   throw lastError instanceof Error
@@ -164,21 +132,21 @@ function prepareInstance(instance: MiniProgramApi): MiniProgramApi {
   return instance;
 }
 
-const connector: SessionConnector<MiniProgramApi> = {
+const connector: SessionConnector = {
   async connect(endpoint) {
-    const instance = await connectDirect(endpoint);
+    const instance = await tryConnect(endpoint);
     return instance ? prepareInstance(instance) : null;
   },
   async launch(projectPath, cliPath, startPort) {
     const connection = await launchOnFreePort(projectPath, cliPath, startPort);
     return { ...connection, instance: prepareInstance(connection.instance) };
   },
-  async disconnect(instance) {
-    await instance.disconnect();
-  },
   onClose(instance, listener) {
+    // ws 意外断开（窗口被关、开发者工具退出）时清空会话，下次调用自动重连而不是报 "Connection closed"
+    // automator 的 Connection 不转发 close，要听在它内部的 transport 上（两者都是 private，走运行时访问）
+    // 用 on 而非 once，避免时序竞争下漏挂
     const internals = instance as unknown as MiniProgramInternals;
-    internals.connection?.transport?.once('close', listener);
+    internals.connection?.transport?.on('close', listener);
   },
 };
 
@@ -192,7 +160,7 @@ export async function ensureMiniProgram(options: ConnectOptions = {}): Promise<M
   const requestedProjectPath = options.projectPath || process.env.WEAPP_PROJECT_PATH;
   if (!requestedProjectPath) {
     const reusable = !options.force ? manager.reuse() : null;
-    if (reusable) return reusable;
+    if (reusable) return reusable as Promise<MiniProgramApi>;
     throw new Error('缺少小程序项目路径：请传 projectPath，或设置环境变量 WEAPP_PROJECT_PATH');
   }
   if (!fs.existsSync(requestedProjectPath)) {
@@ -200,7 +168,7 @@ export async function ensureMiniProgram(options: ConnectOptions = {}): Promise<M
   }
   const projectPath = fs.realpathSync.native(path.resolve(requestedProjectPath));
   const reusable = !options.force ? manager.reuse(projectPath) : null;
-  if (reusable) return reusable;
+  if (reusable) return reusable as Promise<MiniProgramApi>;
 
   const cliPath = options.cliPath || process.env.WECHAT_DEVTOOLS_CLI_PATH || resolveDefaultCliPath();
   if (!cliPath) {
@@ -214,28 +182,15 @@ export async function ensureMiniProgram(options: ConnectOptions = {}): Promise<M
     throw new Error(`WEAPP_AUTOMATOR_PORT 必须是 1~65535 的整数，当前值：${process.env.WEAPP_AUTOMATOR_PORT}`);
   }
 
-  return manager.ensure({
+  return (await manager.ensure({
     projectPath,
     cliPath,
     startPort,
     explicitEndpoint: process.env.WEAPP_WS_ENDPOINT,
     force: options.force,
-  });
+  })) as MiniProgramApi;
 }
 
 export async function disconnect(): Promise<void> {
   await manager.disconnect();
-}
-
-const CONNECTION_ERROR = /Connection closed|WebSocket is not open|ECONN(?:REFUSED|RESET|ABORTED)|EPIPE|socket hang up/i;
-
-export async function withMiniProgram<T>(operation: (instance: MiniProgramApi) => Promise<T>): Promise<T> {
-  const instance = await ensureMiniProgram();
-  try {
-    return await operation(instance);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    if (CONNECTION_ERROR.test(message)) manager.invalidate(instance);
-    throw error;
-  }
 }
