@@ -1,3 +1,23 @@
+# [0.5.0](https://github.com/uni-toolkit/uni-toolkit/compare/v0.4.3...v0.5.0) (2026-10-22)
+
+
+### Bug Fixes
+
+* **wx-mini-mcp:** harden session lifecycle and project isolation ([7daf130](https://github.com/uni-toolkit/uni-toolkit/commit/7daf130c9fbb79276e3194efea12a40e7a1f7168))
+
+
+### Code Refactoring
+
+* **wx-mini-mcp:** rework session layer on public automator API ([#28](https://github.com/uni-toolkit/uni-toolkit/issues/28)) ([e0e12eb](https://github.com/uni-toolkit/uni-toolkit/commit/e0e12ebc2bbb75fc41020a51f91e9722a865ed18))
+* **wx-mini-mcp:** streamline package distribution and usage ([717beea](https://github.com/uni-toolkit/uni-toolkit/commit/717beea95af5c861dc17d63b3753db88c7fc1a00))
+
+
+### Features
+
+* **wx-mini-mcp:** add MCP server for WeChat mini program automation ([#27](https://github.com/uni-toolkit/uni-toolkit/issues/27)) ([33f6550](https://github.com/uni-toolkit/uni-toolkit/commit/33f65504925771f6fc3eefe88d64a95d3a3ab38a))
+
+
+
 ## [0.4.3](https://github.com/uni-toolkit/uni-toolkit/compare/v0.4.2...v0.4.3) (2026-09-30)
 
 

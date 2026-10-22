@@ -1,6 +1,6 @@
 {
   "name": "@uni_toolkit/wx-mini-mcp",
-  "version": "0.1.0",
+  "version": "0.5.0",
   "description": "MCP server for WeChat Mini Program automation via WeChat DevTools (miniprogram-automator).",
   "type": "commonjs",
   "bin": {
