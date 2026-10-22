@@ -13,6 +13,7 @@
 | `@uni_toolkit/vite-plugin-sourcemap` | Vite | 按环境或在所有环境为 uni-app 小程序构建开启 sourcemap。 | [查看文档](./packages/vite-plugin-sourcemap/README.md) |
 | `@uni_toolkit/unplugin-compress-json` | Vite / Webpack | 压缩 JSON 文件，减小文件体积。 | [查看文档](./packages/unplugin-compress-json/README.md) |
 | `@uni_toolkit/unplugin-json-optimization` | Vite | 优化分包 JSON 文件生成，减小主包体积。 | [查看文档](./packages/unplugin-json-optimization/README.md) |
+| `@uni_toolkit/wx-mini-mcp` | MCP 客户端 | 基于微信开发者工具自动化能力的 MCP Server，让 AI 客户端直接查看和操作微信小程序（读取页面状态、跳转页面、截图、查看日志、调用或 Mock `wx.*` API）。 | [查看文档](./packages/wx-mini-mcp/README.md) |
 
 ## 贡献者
 
